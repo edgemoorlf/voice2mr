@@ -24,10 +24,13 @@ COLLECTION = ""
 
 # LLM_API_URL = "http://localhost:9997/v1"
 # MODEL_NAME = "qwen2.5-instruct"
-LLM_API_URL = "http://localhost:11434/v1"
+# LLM_API_URL = "http://localhost:11434/v1"
+LLM_API_URL = "http://45.78.200.182:3010/v1/"
 #MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
 #MODEL_NAME = "deepseek-r1-distill-qwen"
-MODEL_NAME = "gemma3:27b"
+#MODEL_NAME = "gemma3:27b"
+MODEL_NAME = "gpt-4o-2024-11-20"
+#MODEL_NAME = "gpt-4o"
 
 # Global ASR model instance
 _asr_model = None
@@ -108,10 +111,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For development only! Restrict in production.
+    allow_origins=["*"],  # Temporary for development
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]  # Needed for custom headers like X-Client-Type
 )
 
 ocr = PaddleOCR(use_angle_cls=True, lang='ch')
@@ -217,6 +221,7 @@ Simply answer the question. Do not explain."
 # If you cannot find the answer, simply return 'Not found'. \
 # Please do not mention any personal identity information."
     client = OpenAI(base_url=LLM_API_URL, api_key="not used")
+    
     llm_response = client.chat.completions.create(
         model = MODEL_NAME,
         messages = [
@@ -245,15 +250,21 @@ Here is an example of a well-formatted medical record:\n{template}"
 
     try:
         client = OpenAI(base_url=LLM_API_URL, api_key="not used")
-        llm_response = client.chat.completions.create(
-            model = MODEL_NAME,
-            messages = [
+        print(f"prompt: {prompt}")
+
+        kwargs = {
+            'model': MODEL_NAME,
+            'messages': [
                         {"role": "system", "content": context_str},
                         {"role": "user",   "content": prompt}
                        ],
-            response_format={"type": "json_object"},
-            max_tokens=8000
-        )
+            'max_tokens': 8000
+        }
+
+        if json:
+            kwargs['response_format'] = {"type": "json_object"}
+
+        llm_response = client.chat.completions.create(**kwargs)
         
         content = llm_response.choices[0].message.content    
         usage   = llm_response.usage
@@ -297,6 +308,29 @@ async def t2mr_endpoint(request_model: MRRequestModel) -> MRResponseModel:
     response = await t2mr(transcript, medical_records, is_json)
     return response
 
+@app.post("/a2mr")
+async def a2mr_endpoint(files: List[UploadFile] = File(...),
+                        medical_records: str = Form(""),
+                        is_json: bool = Form(False)):
+    """
+    Voice or image files to a Medical Record.
+
+    This endpoint provides you the capability of converting voice records with one or multiple files in audio or video or image formats into a medical record.
+    
+    - **files**: The multimedia files. if it is an audio file, the format must be in content_type "audio/mpeg", "audio/wav", "audio/mp3", "audio/m4a", "video/quicktime" or "video/mp4".
+    - **medical_records**: Additional medical data to be applied, regarding the medical record of the patient.
+    - **is_json**: Whether the result in the json or text with markdown formats.
+
+    Returns the medical records in json or text in markdown.
+    """
+    for file in files:
+        print(f"Received file:{file.filename} with content type: {file.content_type}")
+        
+        if file.content_type not in ["audio/mpeg", "audio/wav", "audio/mp3", "audio/m4a", "video/quicktime", "video/mp4"]:
+            raise HTTPException(status_code=415, detail="Unsupported media type")
+    
+
+
 @app.post("/v2mr")
 async def v2mr_endpoint(files: List[UploadFile] = File(...),
                         medical_records: str = Form(""),
@@ -306,7 +340,7 @@ async def v2mr_endpoint(files: List[UploadFile] = File(...),
 
     This endpoint provides you the capability of converting voice records with one or multiple files in audio or video formats into a medical record.
     
-    - **files**: The voices files. The format must be in content_type "audio/mpeg", "audio/wav", "audio/mp3", "audio/m4a", "video/quicktime" or "video/mp4".
+    - **files**: The audio files. the format must be in content_type "audio/mpeg", "audio/wav", "audio/mp3", "audio/m4a", "video/quicktime" "video/mp4".
     - **medical_records**: Additional medical data to be applied, regarding the medical record of the patient.
     - **is_json**: Whether the result in the json or text with markdown formats.
 
