@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import FileUploader from '@/components/FileUploader'
 import { createMedicalRecord } from '@/lib/api'
+import Chatbox from '@/components/Chatbox'
 
 export default function Home() {
   const [transcript, setTranscript] = useState('')
@@ -10,6 +11,10 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+
+  const handleSendMessage = async (message: string) => {
+    console.log('Chatbox message:', message)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,6 +34,8 @@ export default function Home() {
 
   return (
     <div className="p-4">
+      <Chatbox onSendMessage={handleSendMessage} />
+
       <h1 className="text-2xl font-bold mb-6">New Medical Record</h1>
       
       <form onSubmit={handleSubmit}>
@@ -53,7 +60,6 @@ export default function Home() {
             onUploadStart={() => setUploading(true)}
             onUploadSuccess={(uploadedFiles: File[]) => {
               setUploading(false);
-              // Handle successful upload response
               console.log('Upload successful:', uploadedFiles);
               setFiles(prev => [...prev, ...uploadedFiles]);
             }}

@@ -39,3 +39,15 @@ export const getMedicalRecords = async () => {
   const response = await apiClient.get<MedicalRecord[]>('/medical-records')
   return response.data
 }
+
+export const sendMessage = async (message: string) => {
+  try {
+    const response = await apiClient.post('/query', {
+      prompt: message,
+      role: 'patient',
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}

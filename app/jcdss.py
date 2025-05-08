@@ -315,21 +315,44 @@ async def a2mr_endpoint(files: List[UploadFile] = File(...),
     """
     Voice or image files to a Medical Record.
 
-    This endpoint provides you the capability of converting voice records with one or multiple files in audio or video or image formats into a medical record.
+    This endpoint provides you the capability of converting voice records with one or multiple files in audio, video or image formats into a medical record.
     
-    - **files**: The multimedia files. if it is an audio file, the format must be in content_type "audio/mpeg", "audio/wav", "audio/mp3", "audio/m4a", "video/quicktime" or "video/mp4".
+    - **files**: The multimedia files. For audio/video files, the format must be in content_type "audio/mpeg", "audio/wav", "audio/mp3", "audio/m4a", "video/quicktime" or "video/mp4".
+                 For images, common image formats are supported.
     - **medical_records**: Additional medical data to be applied, regarding the medical record of the patient.
     - **is_json**: Whether the result in the json or text with markdown formats.
 
     Returns the medical records in json or text in markdown.
     """
+    transcripts = []
+    
     for file in files:
         print(f"Received file:{file.filename} with content type: {file.content_type}")
         
-        if file.content_type not in ["audio/mpeg", "audio/wav", "audio/mp3", "audio/m4a", "video/quicktime", "video/mp4"]:
-            raise HTTPException(status_code=415, detail="Unsupported media type")
+        # Handle audio/video files
+        if file.content_type in ["audio/mpeg", "audio/wav", "audio/mp3", "audio/m4a", "video/quicktime", "video/mp4"]:
+            voice_file = await file.read()
+            transcript = await transcribe_voice_to_text(voice_file)
+            if transcript == '':
+                raise HTTPException(status_code=500, detail="Internal Server Error: Empty Transcript from Voice File")
+            transcripts.append(transcript)
+            
+        # Handle image files
+        elif file.content_type.startswith('image/'):
+            image_file = await file.read()
+            transcript = await transcribe_image_to_text(image_file)
+            if transcript == '':
+                raise HTTPException(status_code=500, detail="Internal Server Error: Empty Transcript from Image File")
+            transcripts.append(transcript)
+            
+        else:
+            raise HTTPException(status_code=415, detail=f"Unsupported media type: {file.content_type}")
     
-
+    if not transcripts:
+        raise HTTPException(status_code=400, detail="No valid files were processed")
+        
+    response = await t2mr("\n".join(transcripts), medical_records, is_json)
+    return response
 
 @app.post("/v2mr")
 async def v2mr_endpoint(files: List[UploadFile] = File(...),
@@ -523,7 +546,6 @@ If necessary, please ask the patient questions for his or her conditions first.\
     llm_response = client.chat.completions.create(
         model = MODEL_NAME,
         messages = messages,
-        response_format={"type": "json_object"}
     )
     
     # append new content into history and set it in the session
