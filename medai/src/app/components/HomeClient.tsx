@@ -10,6 +10,7 @@ import ReactMarkdown from "react-markdown"
 type Dictionary = {
   appTitle: string
   appSubtitle: string
+  uploadMedicalRecords: string
 }
 
 export default function HomeClient({
@@ -97,7 +98,7 @@ export default function HomeClient({
 
             {/* Medical Records Section - Secondary Feature */}
             <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Upload Medical Records</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">{dict.uploadMedicalRecords}</h3>
               <p className="text-sm text-gray-600 mb-4">
                 Optional: Upload medical records, images, or voice recordings for more context-aware assistance
               </p>

@@ -180,3 +180,4 @@ a.txt
 temp*.*
 *.mov
 node_modules
+test-results/

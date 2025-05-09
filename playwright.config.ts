@@ -1,7 +1,7 @@
 import { PlaywrightTestConfig, devices } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
-  testDir: './tests',
+  testDir: './medai/tests',
   timeout: 30000,
   use: {
     baseURL: 'http://localhost:3000',
@@ -14,9 +14,9 @@ const config: PlaywrightTestConfig = {
     },
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'cd medai && npm run dev',
     url: 'http://localhost:3000',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },
 };
