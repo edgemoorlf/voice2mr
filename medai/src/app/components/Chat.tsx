@@ -1,7 +1,10 @@
+'use client'
+
 import { useState, useRef, useEffect } from 'react';
 import { PaperAirplaneIcon, MicrophoneIcon, StopIcon } from '@heroicons/react/24/outline';
 import type { Message, ChatResponse } from '@/types/chat';
 import toast from 'react-hot-toast';
+import ReactMarkdown from 'react-markdown';
 
 interface ChatProps {
   medicalRecord?: string; // Make medical record optional
@@ -179,7 +182,9 @@ export default function Chat({ medicalRecord }: ChatProps) {
                   : 'bg-gray-100 text-gray-900'
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              <div className="text-sm whitespace-pre-wrap">
+                <ReactMarkdown>{message.content}</ReactMarkdown>
+              </div>
             </div>
           </div>
         ))}

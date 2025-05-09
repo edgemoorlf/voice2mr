@@ -22,15 +22,11 @@ KV_LIMIT = 256
 DOMAIN = "oncology"
 COLLECTION = ""
 
-# LLM_API_URL = "http://localhost:9997/v1"
-# MODEL_NAME = "qwen2.5-instruct"
-# LLM_API_URL = "http://localhost:11434/v1"
-LLM_API_URL = "http://45.78.200.182:3010/v1/"
-#MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-#MODEL_NAME = "deepseek-r1-distill-qwen"
-#MODEL_NAME = "gemma3:27b"
-MODEL_NAME = "gpt-4o-2024-11-20"
-#MODEL_NAME = "gpt-4o"
+LLM_API_URL = os.environ.get("LLM_API_URL", "http://localhost:3010/v1")
+MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o")
+FALLBACK_LLM_API_URL = os.environ.get("FALLBACK_LLM_API_URL", "http://localhost:11434/v1")
+FALLBACK_MODEL_NAME = os.environ.get("FALLBACK_MODEL_NAME", "qwen3-latest")
+
 
 # Global ASR model instance
 _asr_model = None
@@ -64,7 +60,7 @@ template = \
 性别： 女
 年龄： 34岁
 就诊时间： 2024年1月15日 15:30
-科别： 皮肤科门诊（大兴）
+科别： 皮肤科门诊（大寨）
 
 ##主诉：##
 双侧面颊皮疹1年余，加重20余天。
@@ -250,7 +246,6 @@ Here is an example of a well-formatted medical record:\n{template}"
 
     try:
         client = OpenAI(base_url=LLM_API_URL, api_key="not used")
-        print(f"prompt: {prompt}")
 
         kwargs = {
             'model': MODEL_NAME,
@@ -263,6 +258,8 @@ Here is an example of a well-formatted medical record:\n{template}"
 
         if json:
             kwargs['response_format'] = {"type": "json_object"}
+
+        print(f"prompts: {kwargs['messages']}")
 
         llm_response = client.chat.completions.create(**kwargs)
         
@@ -278,14 +275,47 @@ Here is an example of a well-formatted medical record:\n{template}"
         
         return response
     except Exception as e:
-        print(f"Error communicating with LLM service: {str(e)}")
+        print(f"Error communicating with primary LLM service: {str(e)}")
         if hasattr(e, 'response'):
             print(f"Response status: {e.response.status_code}")
             print(f"Response body: {e.response.text}")
-        raise HTTPException(
-            status_code=503,
-            detail=f"LLM Service Unavailable: {str(e)}. Please check if the LLM service is running at {LLM_API_URL}"
-        )
+        
+        # Try fallback LLM service
+        FALLBACK_LLM_API_URL = os.environ.get("FALLBACK_LLM_API_URL", "http://localhost:11434/v1")
+        FALLBACK_MODEL_NAME = os.environ.get("FALLBACK_MODEL_NAME", "qwen3-latest")
+        
+        try:
+            print(f"Attempting to use fallback LLM service at {FALLBACK_LLM_API_URL}")
+            fallback_client = OpenAI(base_url=FALLBACK_LLM_API_URL, api_key="not used")
+            
+            # Same kwargs as before, but with fallback model name
+            kwargs['model'] = FALLBACK_MODEL_NAME
+            
+            fallback_response = fallback_client.chat.completions.create(**kwargs)
+            
+            content = fallback_response.choices[0].message.content
+            usage = fallback_response.usage
+            print(f"Fallback LLM service responded successfully")
+            
+            response = MRResponseModel(content=content,
+                                     timestamp=int(time.time()),
+                                     prompt_tokens=usage.prompt_tokens,
+                                     completion_tokens=usage.completion_tokens,
+                                     total_tokens=usage.total_tokens
+                                     )
+            return response
+            
+        except Exception as fallback_error:
+            print(f"Error communicating with fallback LLM service: {str(fallback_error)}")
+            if hasattr(fallback_error, 'response'):
+                print(f"Fallback response status: {fallback_error.response.status_code}")
+                print(f"Fallback response body: {fallback_error.response.text}")
+                
+            # Both primary and fallback services failed
+            raise HTTPException(
+                status_code=503,
+                detail=f"All LLM Services Unavailable. Primary: {str(e)}. Fallback: {str(fallback_error)}. Please check LLM services."
+            )
 
 @app.post("/t2mr")
 async def t2mr_endpoint(request_model: MRRequestModel) -> MRResponseModel:
@@ -325,7 +355,7 @@ async def a2mr_endpoint(files: List[UploadFile] = File(...),
     Returns the medical records in json or text in markdown.
     """
     transcripts = []
-    
+    image_records = [medical_records]
     for file in files:
         print(f"Received file:{file.filename} with content type: {file.content_type}")
         
@@ -340,18 +370,20 @@ async def a2mr_endpoint(files: List[UploadFile] = File(...),
         # Handle image files
         elif file.content_type.startswith('image/'):
             image_file = await file.read()
-            transcript = await transcribe_image_to_text(image_file)
-            if transcript == '':
+            text = await transcribe_image_to_text(image_file)
+            if text == '':
                 raise HTTPException(status_code=500, detail="Internal Server Error: Empty Transcript from Image File")
-            transcripts.append(transcript)
-            
+            image_records.append(text)
         else:
             raise HTTPException(status_code=415, detail=f"Unsupported media type: {file.content_type}")
     
     if not transcripts:
-        raise HTTPException(status_code=400, detail="No valid files were processed")
+        transcripts = image_records
+        image_records = []
+        if not transcripts:
+            raise HTTPException(status_code=400, detail="No valid files were processed")
         
-    response = await t2mr("\n".join(transcripts), medical_records, is_json)
+    response = await t2mr("\n".join(transcripts), "\n".join(image_records), is_json)
     return response
 
 @app.post("/v2mr")
