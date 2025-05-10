@@ -59,7 +59,7 @@ export default function Chat({ medicalRecord }: ChatProps) {
         
         setIsLoading(true);
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v2mr`, {
+          const response = await fetch('/api/v2mr', {
             method: 'POST',
             body: formData,
           });
@@ -116,8 +116,7 @@ export default function Chat({ medicalRecord }: ChatProps) {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/query`, {
+      const response = await fetch('/api/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

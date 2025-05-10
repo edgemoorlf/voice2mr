@@ -22,10 +22,10 @@ KV_LIMIT = 256
 DOMAIN = "oncology"
 COLLECTION = ""
 
-LLM_API_URL = os.environ.get("LLM_API_URL", "http://localhost:3010/v1")
-MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o")
+LLM_API_URL = os.environ.get("LLM_API_URL", "http://localhost:11434/v1")
+MODEL_NAME = os.environ.get("MODEL_NAME", "gemma3:1b")
 FALLBACK_LLM_API_URL = os.environ.get("FALLBACK_LLM_API_URL", "http://localhost:11434/v1")
-FALLBACK_MODEL_NAME = os.environ.get("FALLBACK_MODEL_NAME", "qwen3-latest")
+FALLBACK_MODEL_NAME = os.environ.get("FALLBACK_MODEL_NAME", "qwen2.5:0.5b")
 
 
 # Global ASR model instance
