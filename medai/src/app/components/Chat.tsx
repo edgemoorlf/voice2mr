@@ -39,7 +39,7 @@ export default function Chat({ medicalRecord }: ChatProps) {
       };
       setMessages([welcomeMessage]);
     }
-  }, []);
+  }, [messages.length]);
 
   const startRecording = async () => {
     try {
@@ -116,7 +116,7 @@ export default function Chat({ medicalRecord }: ChatProps) {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://2cbd-210-12-23-178.ngrok-free.app';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(`${apiUrl}/query`, {
         method: 'POST',
         headers: {

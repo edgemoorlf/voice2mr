@@ -18,15 +18,9 @@ export default function HomeClient({
 }: {
   dict: Dictionary
 }) {
-  if (!dict?.appTitle) {
-    console.error('Dictionary not loaded:', dict);
-    return <div className="p-8 text-center">Loading...</div>;
-  }
-
   const [files, setFiles] = useState<File[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [medicalRecord, setMedicalRecord] = useState("")
-
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "audio/*": [".mp3", ".wav", ".m4a"],
@@ -37,6 +31,11 @@ export default function HomeClient({
       setFiles([...files, ...acceptedFiles])
     }
   })
+
+  if (!dict?.appTitle) {
+    console.error('Dictionary not loaded:', dict);
+    return <div className="p-8 text-center">Loading...</div>;
+  }
 
   const handleSubmit = async () => {
     if (files.length === 0) {
@@ -51,7 +50,7 @@ export default function HomeClient({
     })
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://2cbd-210-12-23-178.ngrok-free.app'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
       const response = await fetch(`${apiUrl}/a2mr`, {
         method: "POST",
         body: formData
