@@ -3,6 +3,7 @@ import os
 import time
 import uuid
 from dotenv import load_dotenv
+import torch
 
 # Load environment variables from app/.env
 load_dotenv('app/.env')
@@ -40,6 +41,10 @@ def get_asr_model():
     """Get or create the ASR model instance using singleton pattern"""
     global _asr_model
     if _asr_model is None:
+        # Check if CUDA is available
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Using device: {device}")
+        
         _asr_model = AutoModel(
             model="paraformer-zh",
             vad_model="fsmn-vad",
@@ -53,7 +58,7 @@ def get_asr_model():
             punc_model="ct-punc",
             log_level="info",
             hub="ms",
-            device="cpu",
+            device=device,  # Use CUDA if available, otherwise CPU
             disable_update=True  # Prevent automatic updates
         )
     return _asr_model
