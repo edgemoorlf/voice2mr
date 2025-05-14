@@ -2,6 +2,10 @@ import argparse
 import os
 import time
 import uuid
+from dotenv import load_dotenv
+
+# Load environment variables from app/.env
+load_dotenv('app/.env')
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +26,7 @@ KV_LIMIT = 256
 DOMAIN = "oncology"
 COLLECTION = ""
 
+# Now these will pick up values from app/.env
 LLM_API_URL = os.environ.get("LLM_API_URL", "http://localhost:11434/v1")
 MODEL_NAME = os.environ.get("MODEL_NAME", "gemma3:1b")
 FALLBACK_LLM_API_URL = os.environ.get("FALLBACK_LLM_API_URL", "http://localhost:11434/v1")
@@ -229,6 +234,35 @@ Simply answer the question. Do not explain."
     )
     return llm_response
 
+def create_chat_completion(client, model, messages, response_format=None):
+    """
+    Create a chat completion that works with both OpenAI and Ollama APIs
+    """
+    try:
+        # Check if we're using Ollama (local URL)
+        if "localhost" in LLM_API_URL or "127.0.0.1" in LLM_API_URL:
+            # Ollama format
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                stream=False
+            )
+        else:
+            # OpenAI format
+            kwargs = {
+                'model': model,
+                'messages': messages,
+            }
+            if response_format:
+                kwargs['response_format'] = response_format
+                
+            response = client.chat.completions.create(**kwargs)
+            
+        return response
+    except Exception as e:
+        print(f"Error in create_chat_completion: {str(e)}")
+        raise
+
 async def t2mr(transcript: str, medical_records: str, json: bool):
     json_str = "Your task is to generate a JSON-formatted medical record based on the patient's description. " if json else ""
     prompt = f"Please convert the conversation transcript into a formal medical record: {transcript}"
@@ -253,7 +287,6 @@ Here is an example of a well-formatted medical record:\n{template}"
                         {"role": "system", "content": context_str},
                         {"role": "user",   "content": prompt}
                        ],
-            'max_tokens': 8000
         }
 
         if json:
@@ -261,7 +294,12 @@ Here is an example of a well-formatted medical record:\n{template}"
 
         print(f"prompts: {kwargs['messages']}")
 
-        llm_response = client.chat.completions.create(**kwargs)
+        llm_response = create_chat_completion(
+            client=client,
+            model=MODEL_NAME,
+            messages=kwargs['messages'],
+            response_format=kwargs.get('response_format')
+        )
         
         content = llm_response.choices[0].message.content    
         usage   = llm_response.usage
@@ -291,7 +329,12 @@ Here is an example of a well-formatted medical record:\n{template}"
             # Same kwargs as before, but with fallback model name
             kwargs['model'] = FALLBACK_MODEL_NAME
             
-            fallback_response = fallback_client.chat.completions.create(**kwargs)
+            fallback_response = create_chat_completion(
+                client=fallback_client,
+                model=FALLBACK_MODEL_NAME,
+                messages=kwargs['messages'],
+                response_format=kwargs.get('response_format')
+            )
             
             content = fallback_response.choices[0].message.content
             usage = fallback_response.usage
@@ -500,13 +543,13 @@ natural language to be used as a section for a medical record readable by doctor
 If there are multiple checkups in the medical records, please list them by time, in reverse order. \
 Please only refer to the data provided. Do not explain."
     client = OpenAI(base_url=LLM_API_URL, api_key="not used")
-    llm_response = client.chat.completions.create(
-        model = MODEL_NAME,
-        messages = [
+    llm_response = create_chat_completion(
+        client=client,
+        model=MODEL_NAME,
+        messages=[
             {"role": "system", "content": context_str},
             {"role": "user", "content": prompt}
-        ],
-        response_format={"type": "json_object"}
+        ]
     )
     
     content = llm_response.choices[0].message.content    
@@ -575,9 +618,10 @@ If necessary, please ask the patient questions for his or her conditions first.\
     print(f"messages: ------BEGIN-------\n{messages}\n------END--------")
 
     client = OpenAI(base_url=LLM_API_URL, api_key="not used")
-    llm_response = client.chat.completions.create(
-        model = MODEL_NAME,
-        messages = messages,
+    llm_response = create_chat_completion(
+        client=client,
+        model=MODEL_NAME,
+        messages=messages
     )
     
     # append new content into history and set it in the session
