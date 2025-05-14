@@ -50,8 +50,7 @@ export default function HomeClient({
     })
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-      const response = await fetch(`${apiUrl}/a2mr`, {
+      const response = await fetch('/api/a2mr', {
         method: "POST",
         body: formData
       })
