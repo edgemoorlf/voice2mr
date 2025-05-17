@@ -1,0 +1,44 @@
+{
+  "appTitle": "Su Asistente Médico AI",
+  "appSubtitle": "Hable o escriba sus preguntas médicas y suba registros relevantes para obtener asistencia más personalizada",
+  "uploadMedicalRecords": "Subir Registros Médicos",
+  "upload": {
+    "description": "Opcional: Suba registros médicos, imágenes o grabaciones de voz para obtener asistencia más contextualizada",
+    "dragDropText": "Arrastre y suelte archivos aquí, o haga clic para seleccionar",
+    "supportedFormats": "Admite audio (MP3, WAV), video (MP4) e imágenes (PNG, JPG)"
+  },
+  "chat": {
+    "welcomeMessage": "¡Hola! Soy su asistente médico AI. Puede escribir sus preguntas o usar el botón del micrófono para hablar. ¿Cómo puedo ayudarle hoy?",
+    "inputPlaceholder": "Escriba su mensaje o haga clic en el micrófono para hablar...",
+    "recordingStarted": "Grabación iniciada... Hable ahora",
+    "recordingStopped": "Grabación detenida, procesando...",
+    "microphoneError": "No se pudo acceder al micrófono. Por favor, verifique los permisos.",
+    "processingError": "Error al procesar la entrada de voz. Por favor, intente escribir.",
+    "voiceInputError": "Error al procesar la entrada de voz"
+  },
+  "about": {
+    "title": "Acerca de MedAI",
+    "description": "MedAI es un asistente médico AI gratuito diseñado para hacer que la atención médica sea más accesible para todos, especialmente para aquellos en áreas remotas con acceso limitado a servicios médicos.",
+    "mission": {
+      "title": "Nuestra Misión",
+      "content": "Creemos que todos merecen acceso a orientación médica de calidad. Nuestra plataforma impulsada por AI ayuda a cerrar la brecha proporcionando perspectivas y recomendaciones médicas iniciales basadas en sus grabaciones de voz, imágenes y registros médicos anteriores."
+    },
+    "howItWorks": {
+      "title": "Cómo Funciona",
+      "items": [
+        "Suba grabaciones de voz de sus síntomas o preocupaciones médicas",
+        "Comparta imágenes de síntomas visibles o registros médicos anteriores",
+        "Reciba perspectivas y recomendaciones médicas generadas por AI",
+        "Obtenga sus resultados en múltiples idiomas (próximamente)"
+      ]
+    },
+    "notice": {
+      "title": "Aviso Importante",
+      "content": "MedAI está diseñado para proporcionar orientación inicial y no debe reemplazar el consejo médico profesional. Siempre consulte con un proveedor de atención médica calificado para un diagnóstico y tratamiento adecuados."
+    },
+    "privacy": {
+      "title": "Privacidad y Seguridad",
+      "content": "Tomamos su privacidad muy en serio. Todos los archivos cargados y la información médica se procesan de forma segura y no se almacenan permanentemente en nuestros servidores. Nuestro servicio cumple con estrictos estándares de protección de datos médicos."
+    }
+  }
+} 

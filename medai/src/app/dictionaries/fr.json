@@ -1,0 +1,44 @@
+{
+  "appTitle": "Votre Assistant Médical IA",
+  "appSubtitle": "Parlez ou écrivez vos questions médicales et téléchargez des dossiers pertinents pour une assistance plus personnalisée",
+  "uploadMedicalRecords": "Télécharger les Dossiers Médicaux",
+  "upload": {
+    "description": "Optionnel : Téléchargez des dossiers médicaux, des images ou des enregistrements vocaux pour une assistance plus contextualisée",
+    "dragDropText": "Glissez-déposez les fichiers ici, ou cliquez pour sélectionner",
+    "supportedFormats": "Prend en charge l'audio (MP3, WAV), la vidéo (MP4) et les images (PNG, JPG)"
+  },
+  "chat": {
+    "welcomeMessage": "Bonjour ! Je suis votre assistant médical IA. Vous pouvez taper vos questions ou utiliser le bouton microphone pour parler. Comment puis-je vous aider aujourd'hui ?",
+    "inputPlaceholder": "Tapez votre message ou cliquez sur le microphone pour parler...",
+    "recordingStarted": "Enregistrement démarré... Parlez maintenant",
+    "recordingStopped": "Enregistrement arrêté, traitement en cours...",
+    "microphoneError": "Impossible d'accéder au microphone. Veuillez vérifier les autorisations.",
+    "processingError": "Échec du traitement de l'entrée vocale. Veuillez essayer de taper.",
+    "voiceInputError": "Échec du traitement de l'entrée vocale"
+  },
+  "about": {
+    "title": "À Propos de MedAI",
+    "description": "MedAI est un assistant médical IA gratuit conçu pour rendre les soins de santé plus accessibles à tous, en particulier aux personnes dans les zones reculées ayant un accès limité aux services médicaux.",
+    "mission": {
+      "title": "Notre Mission",
+      "content": "Nous croyons que tout le monde mérite d'avoir accès à des conseils médicaux de qualité. Notre plateforme alimentée par l'IA aide à combler le fossé en fournissant des aperçus et des recommandations médicales initiales basés sur vos enregistrements vocaux, images et dossiers médicaux antérieurs."
+    },
+    "howItWorks": {
+      "title": "Comment Ça Marche",
+      "items": [
+        "Téléchargez des enregistrements vocaux de vos symptômes ou préoccupations médicales",
+        "Partagez des images de symptômes visibles ou des dossiers médicaux antérieurs",
+        "Recevez des aperçus et recommandations médicales générés par l'IA",
+        "Obtenez vos résultats en plusieurs langues (bientôt disponible)"
+      ]
+    },
+    "notice": {
+      "title": "Avis Important",
+      "content": "MedAI est conçu pour fournir des conseils initiaux et ne doit pas remplacer l'avis médical professionnel. Consultez toujours un professionnel de santé qualifié pour un diagnostic et un traitement appropriés."
+    },
+    "privacy": {
+      "title": "Confidentialité et Sécurité",
+      "content": "Nous prenons votre confidentialité très au sérieux. Tous les fichiers téléchargés et les informations médicales sont traités de manière sécurisée et ne sont pas stockés de façon permanente sur nos serveurs. Notre service respecte des normes strictes de protection des données médicales."
+    }
+  }
+} 

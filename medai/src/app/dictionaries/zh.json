@@ -1,5 +1,44 @@
 {
   "appTitle": "您的AI医疗助手",
   "appSubtitle": "通过语音或文字输入您的医疗问题，并上传相关记录以获得更个性化的帮助",
-  "uploadMedicalRecords": "上传病历"
+  "uploadMedicalRecords": "上传病历",
+  "upload": {
+    "description": "可选：上传病历、图片或语音记录以获得更有针对性的帮助",
+    "dragDropText": "拖放文件到此处，或点击选择文件",
+    "supportedFormats": "支持音频（MP3、WAV）、视频（MP4）和图片（PNG、JPG）"
+  },
+  "chat": {
+    "welcomeMessage": "您好！我是您的AI医疗助手。您可以输入问题或使用麦克风按钮进行语音输入。我能为您做些什么？",
+    "inputPlaceholder": "输入消息或点击麦克风按钮进行语音输入...",
+    "recordingStarted": "开始录音... 请说话",
+    "recordingStopped": "录音结束，正在处理...",
+    "microphoneError": "无法访问麦克风，请检查权限设置。",
+    "processingError": "语音输入处理失败，请尝试文字输入。",
+    "voiceInputError": "语音输入处理失败"
+  },
+  "about": {
+    "title": "关于MedAI",
+    "description": "MedAI是一款免费的AI医疗助手，旨在让每个人都能获得医疗服务，特别是那些医疗资源有限的地区的人们。",
+    "mission": {
+      "title": "我们的使命",
+      "content": "我们相信每个人都应该获得优质的医疗指导。我们的AI平台通过分析您的语音记录、图像和既往病历，帮助缩小医疗资源差距，提供初步的医疗见解和建议。"
+    },
+    "howItWorks": {
+      "title": "使用方法",
+      "items": [
+        "上传症状相关的语音记录",
+        "分享可见症状的图片或既往病历",
+        "获取AI生成的医疗见解和建议",
+        "获取多语言结果（即将推出）"
+      ]
+    },
+    "notice": {
+      "title": "重要提示",
+      "content": "MedAI旨在提供初步指导，不能替代专业医疗建议。请务必咨询合格的医疗服务提供者以获得正确的诊断和治疗。"
+    },
+    "privacy": {
+      "title": "隐私与安全",
+      "content": "我们严格保护您的隐私。所有上传的文件和医疗信息都经过安全处理，不会在我们的服务器上永久存储。我们的服务遵守严格的医疗数据保护标准。"
+    }
+  }
 } 

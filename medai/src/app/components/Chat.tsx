@@ -3,14 +3,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { PaperAirplaneIcon, MicrophoneIcon, StopIcon } from '@heroicons/react/24/outline';
 import type { Message, ChatResponse } from '@/types/chat';
+import type { Dictionary } from '@/types/dictionary';
 import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 
 interface ChatProps {
   medicalRecord?: string; // Make medical record optional
+  dict: Dictionary;
 }
 
-export default function Chat({ medicalRecord }: ChatProps) {
+export default function Chat({ medicalRecord, dict }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -34,12 +36,12 @@ export default function Chat({ medicalRecord }: ChatProps) {
       const welcomeMessage: Message = {
         id: 'welcome-message',
         role: 'assistant',
-        content: "Hello! I'm your AI medical assistant. You can type your questions or use the microphone button to speak. How can I help you today?",
+        content: dict.chat.welcomeMessage,
         timestamp: Date.now(),
       };
       setMessages([welcomeMessage]);
     }
-  }, [messages.length]);
+  }, [messages.length, dict.chat.welcomeMessage]);
 
   const startRecording = async () => {
     try {
@@ -86,10 +88,10 @@ export default function Chat({ medicalRecord }: ChatProps) {
 
       recorder.start();
       setIsRecording(true);
-      toast.success('Recording started... Speak now');
+      toast.success(dict.chat.recordingStarted);
     } catch (error) {
       console.error('Error accessing microphone:', error);
-      toast.error('Could not access microphone. Please check permissions.');
+      toast.error(dict.chat.microphoneError);
     }
   };
 
@@ -97,7 +99,7 @@ export default function Chat({ medicalRecord }: ChatProps) {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
       mediaRecorder.stop();
       setIsRecording(false);
-      toast.success('Recording stopped, processing...');
+      toast.success(dict.chat.recordingStopped);
     }
   };
 
@@ -223,7 +225,7 @@ export default function Chat({ medicalRecord }: ChatProps) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message or click the microphone to speak..."
+            placeholder={dict.chat.inputPlaceholder}
             className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading || isRecording}
           />

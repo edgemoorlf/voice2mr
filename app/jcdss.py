@@ -124,7 +124,7 @@ app.add_middleware(
     expose_headers=["*"]  # Needed for custom headers like X-Client-Type
 )
 
-ocr = PaddleOCR(use_angle_cls=True, lang='ch')
+ocr = PaddleOCR(use_angle_cls=True, lang='ch', use_gpu=True)
 hotwords="./hotwords.txt"
 
 class CDSSRequestModel(BaseModel):

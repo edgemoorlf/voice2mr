@@ -5,6 +5,12 @@ import { i18n } from './app/i18n-config'
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
+  // Check if this is a direct locale route (e.g., /es, /fr)
+  const isDirectLocaleRoute = i18n.locales.some(locale => pathname === `/${locale}`)
+  if (isDirectLocaleRoute) {
+    return // Allow direct locale routes to pass through
+  }
+
   // Check if the pathname is missing a locale
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`

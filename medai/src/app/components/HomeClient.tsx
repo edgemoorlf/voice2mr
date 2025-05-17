@@ -6,12 +6,30 @@ import { ArrowUpTrayIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline
 import toast from "react-hot-toast"
 import Chat from "./Chat"
 import ReactMarkdown from "react-markdown"
+import type { Dictionary } from "@/types/dictionary"
 
-type Dictionary = {
-  appTitle: string
-  appSubtitle: string
-  uploadMedicalRecords: string
-}
+// Function to preprocess markdown text to ensure valid syntax
+const preprocessMarkdown = (text: string): string => {
+  if (!text) return text;
+  
+  // Fix headings: ##heading## -> ## heading
+  text = text.replace(/#{2,6}([^#\n]+)#{2,6}/g, (match, content) => {
+    const headingLevel = match.indexOf(' ');
+    const hashtags = match.substring(0, headingLevel);
+    return `${hashtags}${content.trim()}`;
+  });
+  
+  // Fix headers that don't have spaces: ##患者信息： -> ## 患者信息：
+  text = text.replace(/^(#{1,6})([^\s#])/gm, '$1 $2');
+  
+  // Fix list items without proper spacing: -item -> - item
+  text = text.replace(/^(\s*[-*+])([^\s])/gm, '$1 $2');
+  
+  // Ensure blank lines before headings for proper rendering
+  text = text.replace(/([^\n])\n(#{1,6})/g, '$1\n\n$2');
+  
+  return text;
+};
 
 export default function HomeClient({
   dict
@@ -20,7 +38,7 @@ export default function HomeClient({
 }) {
   const [files, setFiles] = useState<File[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
-  const [medicalRecord, setMedicalRecord] = useState("")
+  const [medicalRecordHtml, setMedicalRecordHtml] = useState("")
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "audio/*": [".mp3", ".wav", ".m4a"],
@@ -61,7 +79,8 @@ export default function HomeClient({
       }
 
       const data = await response.json()
-      setMedicalRecord(data.content)
+      
+      setMedicalRecordHtml(preprocessMarkdown(data.content))
       toast.success("Files processed successfully!")
     } catch (error) {
       console.error("Error processing files:", error)
@@ -91,14 +110,14 @@ export default function HomeClient({
           <div className="space-y-8">
             {/* Chat Interface - Primary Feature */}
             <div className="bg-white shadow-lg rounded-lg p-6">
-              <Chat medicalRecord={medicalRecord} />
+              <Chat medicalRecord={medicalRecordHtml} dict={dict} />
             </div>
 
             {/* Medical Records Section - Secondary Feature */}
             <div className="bg-white shadow rounded-lg p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">{dict.uploadMedicalRecords}</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Optional: Upload medical records, images, or voice recordings for more context-aware assistance
+                {dict.upload.description}
               </p>
               
               <div 
@@ -108,10 +127,10 @@ export default function HomeClient({
                 <input {...getInputProps()} />
                 <ArrowUpTrayIcon className="mx-auto h-12 w-12 text-gray-400" />
                 <p className="mt-2 text-sm text-gray-600">
-                  Drag & drop files here, or click to select
+                  {dict.upload.dragDropText}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  Supports audio (MP3, WAV), video (MP4), and images (PNG, JPG)
+                  {dict.upload.supportedFormats}
                 </p>
               </div>
 
@@ -154,12 +173,12 @@ export default function HomeClient({
               )}
 
               {/* Medical Record Display */}
-              {medicalRecord && (
+              {medicalRecordHtml && (
                 <div className="mt-6">
                   <h4 className="text-sm font-medium text-gray-900 mb-2">Processed Medical Record:</h4>
                   <div className="bg-gray-50 rounded-lg p-4">
                     <div className="prose prose-sm text-gray-700 max-w-none">
-                      <ReactMarkdown>{medicalRecord}</ReactMarkdown>
+                      <div dangerouslySetInnerHTML={{ __html: medicalRecordHtml }} />
                     </div>
                   </div>
                 </div>

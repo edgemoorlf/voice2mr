@@ -1,5 +1,44 @@
 {
   "appTitle": "Your AI Medical Assistant",
   "appSubtitle": "Speak or type your medical questions, and upload relevant records for more personalized assistance",
-  "uploadMedicalRecords": "Upload Medical Records"
+  "uploadMedicalRecords": "Upload Medical Records",
+  "upload": {
+    "description": "Optional: Upload medical records, images, or voice recordings for more context-aware assistance",
+    "dragDropText": "Drag & drop files here, or click to select",
+    "supportedFormats": "Supports audio (MP3, WAV), video (MP4), and images (PNG, JPG)"
+  },
+  "chat": {
+    "welcomeMessage": "Hello! I'm your AI medical assistant. You can type your questions or use the microphone button to speak. How can I help you today?",
+    "inputPlaceholder": "Type your message or click the microphone to speak...",
+    "recordingStarted": "Recording started... Speak now",
+    "recordingStopped": "Recording stopped, processing...",
+    "microphoneError": "Could not access microphone. Please check permissions.",
+    "processingError": "Failed to process voice input. Please try typing instead.",
+    "voiceInputError": "Failed to process voice input"
+  },
+  "about": {
+    "title": "About MedAI",
+    "description": "MedAI is a free medical AI assistant designed to make healthcare more accessible to everyone, especially those in remote areas with limited access to medical services.",
+    "mission": {
+      "title": "Our Mission",
+      "content": "We believe that everyone deserves access to quality healthcare guidance. Our AI-powered platform helps bridge the gap by providing initial medical insights and recommendations based on your voice recordings, images, and previous medical records."
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "items": [
+        "Upload voice recordings of your symptoms or medical concerns",
+        "Share images of visible symptoms or previous medical records",
+        "Receive AI-generated medical insights and recommendations",
+        "Get your results in multiple languages (coming soon)"
+      ]
+    },
+    "notice": {
+      "title": "Important Notice",
+      "content": "MedAI is designed to provide initial guidance and should not replace professional medical advice. Always consult with a qualified healthcare provider for proper diagnosis and treatment."
+    },
+    "privacy": {
+      "title": "Privacy & Security",
+      "content": "We take your privacy seriously. All uploaded files and medical information are processed securely and are not stored permanently on our servers. Our service adheres to strict medical data protection standards."
+    }
+  }
 } 
