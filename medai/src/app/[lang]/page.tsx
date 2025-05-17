@@ -6,5 +6,5 @@ import HomeClient from '../components/HomeClient'
 export default async function LocalizedHomePage({ params: { lang } }: { params: { lang: Locale } }) {
   const dict = (await getDictionary(lang)) as Dictionary
 
-  return <HomeClient dict={dict} />
+  return <HomeClient dict={dict} lang={lang} />
 }

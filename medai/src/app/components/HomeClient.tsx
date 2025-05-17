@@ -6,6 +6,9 @@ import { ArrowUpTrayIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline
 import toast from "react-hot-toast"
 import Chat from "./Chat"
 import type { Dictionary } from "@/types/dictionary"
+import type { Locale } from "../i18n-config"
+import { i18n } from "../i18n-config"
+import Link from "next/link"
 
 // Function to preprocess markdown text to ensure valid syntax
 const preprocessMarkdown = (text: string): string => {
@@ -30,11 +33,12 @@ const preprocessMarkdown = (text: string): string => {
   return text;
 };
 
-export default function HomeClient({
-  dict
-}: {
-  dict: Dictionary
-}) {
+interface HomeClientProps {
+  dict: Dictionary;
+  lang: Locale;
+}
+
+export default function HomeClient({ dict, lang }: HomeClientProps) {
   const [files, setFiles] = useState<File[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [medicalRecordHtml, setMedicalRecordHtml] = useState("")
@@ -95,6 +99,26 @@ export default function HomeClient({
 
   return (
     <div className="py-8">
+      {/* Language Navigation */}
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
+        <ul className="flex justify-center space-x-4">
+          {i18n.locales.map((locale) => (
+            <li key={locale}>
+              <Link
+                href={`/${locale}`}
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  lang === locale
+                    ? "bg-blue-100 text-blue-700"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                }`}
+              >
+                {i18n.languageNames[locale]}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
