@@ -5,7 +5,6 @@ import { useDropzone } from "react-dropzone"
 import { ArrowUpTrayIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline"
 import toast from "react-hot-toast"
 import Chat from "./Chat"
-import ReactMarkdown from "react-markdown"
 import type { Dictionary } from "@/types/dictionary"
 
 // Function to preprocess markdown text to ensure valid syntax

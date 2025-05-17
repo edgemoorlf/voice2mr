@@ -1,6 +1,17 @@
 import type { Dictionary } from '@/types/dictionary';
+import { getDictionary } from '../dictionaries/get-dictionary';
+import type { Locale } from '../../i18n-config';
 
-export default function About({ dict }: { dict: Dictionary }) {
+// EXTREME DIAGNOSTIC ATTEMPT: Typing params AND searchParams as Promises.
+// This is NOT standard for App Router and is for diagnosis only.
+export default async function About(props: {
+  params: Promise<{ lang: Locale }>; 
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>; // Treating searchParams as a Promise
+}) {
+  const { lang } = await props.params;
+  // const actualSearchParams = props.searchParams ? await props.searchParams : undefined; // How you might access it
+  const dict = await getDictionary(lang) as Dictionary;
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-3xl mx-auto">

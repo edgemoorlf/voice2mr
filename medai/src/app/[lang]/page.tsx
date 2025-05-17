@@ -1,13 +1,10 @@
-import { getDictionary } from '../dictionaries/get-dictionary'
-import { Locale } from '../i18n-config'
+import { getDictionary } from './dictionaries/get-dictionary'
+import type { Locale } from '../i18n-config'
+import type { Dictionary } from '@/types/dictionary'
 import HomeClient from '../components/HomeClient'
 
-type Props = {
-  params: Promise<{ lang: Locale }>
-};
+export default async function LocalizedHomePage({ params: { lang } }: { params: { lang: Locale } }) {
+  const dict = (await getDictionary(lang)) as Dictionary
 
-export default async function Home({ params }: Props) {
-  const { lang } = await params;
-  const dict = await getDictionary(lang);
-  return <HomeClient dict={dict} />;
+  return <HomeClient dict={dict} />
 }
