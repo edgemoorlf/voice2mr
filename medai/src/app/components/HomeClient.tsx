@@ -103,7 +103,7 @@ export default function HomeClient({ dict, lang }: HomeClientProps) {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
         <ul className="flex justify-center space-x-4">
           {i18n.locales.map((locale) => (
-            <li key={locale}>
+            <li key={locale} style={{ whiteSpace: 'nowrap' }}>
               <Link
                 href={`/${locale}`}
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
