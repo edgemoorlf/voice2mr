@@ -182,3 +182,4 @@ temp*.*
 node_modules
 test-results/
 .next
+package-lock.json

@@ -10,4 +10,9 @@ const dictionaries = {
   th: () => import('./th.json').then((module) => module.default),
 }
 
-export const getDictionary = async (locale: Locale) => dictionaries[locale]() 
+export const getDictionary = async (locale: Locale) => {
+  if (!(locale in dictionaries)) {
+    throw new Error(`Invalid locale: ${locale}`);
+  }
+  return dictionaries[locale]();
+} 
