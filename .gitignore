@@ -183,3 +183,8 @@ node_modules
 test-results/
 .next
 package-lock.json
+*.bak
+medai/public/sw.js
+medai/public/workbox-*.js
+.DS_Store
+medai/package-lock.json

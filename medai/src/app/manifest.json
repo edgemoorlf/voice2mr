@@ -2,6 +2,8 @@
   "name": "MedAI",
   "short_name": "MedAI",
   "description": "Medical Information and Analysis for Underserved Communities.",
+  "id": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -18,11 +20,34 @@
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/icons/apple-touch-icon-120x120.png",
+      "sizes": "120x120",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/apple-touch-icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/apple-touch-icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ],
   "theme_color": "#FFFFFF",
   "background_color": "#FFFFFF",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "categories": ["medical", "productivity", "health"],
+  "screenshots": [
+    {
+      "src": "/screenshots/screen1.png",
+      "sizes": "540x960",
+      "type": "image/png"
+    }
+  ]
 }
