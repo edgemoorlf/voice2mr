@@ -98,4 +98,18 @@ The API will be available at http://localhost:8000/api/docs for Swagger document
 
 ## License
 
-See the LICENSE file for details. 
+See the LICENSE file for details.
+
+## End-to-End (E2E) PWA Testing
+
+To run the Playwright E2E test for PWA features in a production environment, use the following command:
+
+```sh
+NODE_ENV=production npx playwright test tests/e2e-pwa.spec.ts
+```
+
+**Notes:**
+- This command ensures the tests run with `NODE_ENV=production`, which is required for service worker and PWA features to be active.
+- Make sure your app is built and served in production mode before running the test (e.g., `npm run build && npm start`).
+- The test file `tests/e2e-pwa.spec.ts` should contain your PWA-related E2E tests.
+- For more details, see the test plan in `docs/testplans.md`. 

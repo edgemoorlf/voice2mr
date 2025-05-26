@@ -1,6 +1,7 @@
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import { Inter } from 'next/font/google'
+import ServiceWorkerRegister from '@/app/components/ServiceWorkerRegister'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -28,6 +29,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-gray-50">
         <Toaster position="top-right" />
+        <ServiceWorkerRegister />
         {children}
       </body>
     </html>

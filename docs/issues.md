@@ -1,6 +1,13 @@
 # Outstanding Issues
 
-## 1. Service Worker Registration and Internal Asset Serving
+## 1. Service Worker Registration and Internal Asset Serving (Resolved)
+- Manual service worker restored and now registers/activates correctly after fixing a syntax error in the fetch event handler.
+- Offline fallback for navigation requests now works: uncached pages show offline.html, not a 404.
+- Previous issue with registration failure due to script evaluation error is resolved.
+- Note: Careful error handling in the fetch event is critical to avoid breaking SW registration.
+
+### Previously:
+
 - After switching to `next-pwa` and removing manual service worker registration, the service worker is generated and registered automatically.
 - However, requests to internal Next.js build artifacts (e.g., `/_next/app-build-manifest.json`) return the app's 404 page instead of the expected JSON.
 - This causes service worker installation to fail (`bad-precaching-response`) and leaves the service worker stuck in the "installing" state, breaking offline support.
