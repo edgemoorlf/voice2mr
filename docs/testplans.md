@@ -153,3 +153,245 @@ NODE_ENV=production npx playwright test tests/e2e-pwa.spec.ts
 - This command sets `NODE_ENV=production` so that service worker and PWA features are enabled during testing.
 - The test file `tests/e2e-pwa.spec.ts` should contain your PWA E2E scenarios.
 - For more details, see the E2E section in the project README.
+
+# Backend API Test Plan
+
+## Overview
+Tests should be organized in the `tests` directory with the following structure:
+```
+tests/
+├── unit/
+│   ├── services/
+│   │   ├── test_asr.py
+│   │   ├── test_ocr.py
+│   │   ├── test_llm.py
+│   │   └── test_medical_record.py
+│   └── core/
+│       ├── test_config.py
+│       └── test_i18n.py
+├── integration/
+│   ├── test_voice_endpoints.py
+│   ├── test_image_endpoints.py
+│   └── test_chat_endpoints.py
+└── e2e/
+    └── test_full_workflow.py
+```
+
+## Test Categories
+
+### 1. Unit Tests
+
+#### Core Components
+- **Configuration (`test_config.py`)**
+  - Test environment variable loading
+  - Test default values
+  - Test supported audio types
+  - Test LLM configurations
+
+- **i18n (`test_i18n.py`)**
+  - Test language prompt retrieval
+  - Test fallback to default language
+  - Test medical record template retrieval
+  - Test all supported languages
+
+#### Services
+- **ASR Service (`test_asr.py`)**
+  - Test voice transcription with different audio formats
+  - Test error handling for invalid audio
+  - Test Chinese speech recognition accuracy
+  - Test VAD (Voice Activity Detection) settings
+
+- **OCR Service (`test_ocr.py`)**
+  - Test image text extraction
+  - Test different image formats
+  - Test Chinese character recognition
+  - Test error handling for invalid images
+
+- **LLM Service (`test_llm.py`)**
+  - Test completion generation
+  - Test primary/fallback service switching
+  - Test JSON response formatting
+  - Test error handling
+
+- **Medical Record Service (`test_medical_record.py`)**
+  - Test medical record generation
+  - Test chat processing
+  - Test voice file processing
+  - Test image file processing
+
+### 2. Integration Tests
+
+#### Voice Endpoints (`test_voice_endpoints.py`)
+- **POST /v2mr**
+  ```python
+  def test_voice_to_medical_record():
+      # Test single audio file conversion
+      # Test multiple audio files
+      # Test unsupported audio format
+      # Test empty audio file
+      # Test with additional medical records
+      # Test different languages
+  ```
+
+#### Image Endpoints (`test_image_endpoints.py`)
+- **POST /i2mr**
+  ```python
+  def test_image_to_medical_record():
+      # Test single image conversion
+      # Test multiple images
+      # Test unsupported image format
+      # Test empty image
+      # Test with additional medical records
+      # Test different languages
+  ```
+
+- **POST /iqa**
+  ```python
+  def test_image_qa():
+      # Test image-based Q&A
+      # Test keyword extraction
+      # Test multiple prompts
+      # Test error handling
+  ```
+
+#### Chat Endpoints (`test_chat_endpoints.py`)
+- **POST /query**
+  ```python
+  def test_chat_query():
+      # Test doctor role queries
+      # Test patient role queries
+      # Test session management
+      # Test chat history
+      # Test different languages
+  ```
+
+- **POST /t2mr**
+  ```python
+  def test_text_to_medical_record():
+      # Test direct text conversion
+      # Test with medical records
+      # Test different languages
+      # Test JSON/text format options
+  ```
+
+### 3. End-to-End Tests (`test_full_workflow.py`)
+```python
+def test_complete_medical_workflow():
+    # Test full patient consultation flow:
+    # 1. Voice recording to medical record
+    # 2. Image upload of test results
+    # 3. Chat interaction for clarification
+    # 4. Final medical record generation
+```
+
+## Test Environment Setup
+
+### Local Development
+```sh
+# Install test dependencies
+pip install pytest pytest-asyncio pytest-cov httpx
+
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=app tests/
+
+# Run specific test category
+pytest tests/unit/
+pytest tests/integration/
+pytest tests/e2e/
+```
+
+### CI/CD Pipeline
+- Tests should run on every pull request
+- Coverage threshold: minimum 80%
+- All tests must pass before merge
+
+### Understanding conftest.py
+
+The `conftest.py` file in the project root serves several critical purposes:
+
+1. **Shared Fixtures**: 
+   - Provides common test fixtures available to all test files
+   - Current shared fixtures include:
+     ```python
+     @pytest.fixture
+     def test_data_dir()  # Provides path to test data
+     def sample_audio_file()  # Provides test audio data
+     def sample_image_file()  # Provides test image data
+     def sample_medical_record()  # Provides sample medical record text
+     ```
+
+2. **Global Test Configuration**:
+   - Contains `setup_test_env` fixture with `autouse=True` for automatic environment setup
+   - Sets up test environment variables for LLM services:
+     ```python
+     @pytest.fixture(autouse=True)
+     def setup_test_env(monkeypatch):
+         env_vars = {
+             "LLM_API_URL": "http://localhost:11434/v1",
+             "MODEL_NAME": "test-model",
+             "FALLBACK_LLM_API_URL": "http://localhost:11435/v1",
+             "FALLBACK_MODEL_NAME": "fallback-model"
+         }
+     ```
+
+3. **Auto-Discovery**:
+   - pytest automatically finds and loads `conftest.py`
+   - Fixtures are available to all test files without explicit imports
+   - Helps maintain DRY (Don't Repeat Yourself) principles in tests
+
+4. **Test Organization**:
+   - Centralizes common test data and configurations
+   - Ensures consistent test environment setup
+   - Can be hierarchical with multiple conftest.py files in different directories
+
+## Mocking Strategy
+
+### External Services
+- Mock ASR service for voice transcription
+- Mock OCR service for image processing
+- Mock LLM service for text generation
+```python
+@pytest.fixture
+def mock_llm_service(mocker):
+    return mocker.patch('app.services.llm.LLMService')
+```
+
+### Test Data
+- Sample audio files in different formats
+- Sample images with medical information
+- Sample medical records
+- Expected transcription results
+- Expected LLM responses
+
+## Error Scenarios to Test
+1. Network failures
+2. Service timeouts
+3. Invalid input formats
+4. Unsupported languages
+5. Empty or corrupted files
+6. Rate limiting
+7. Service unavailability (primary and fallback)
+
+## Performance Testing
+- Response time under normal load
+- Concurrent request handling
+- File size limits
+- Memory usage monitoring
+- Service recovery after failures
+
+## Security Testing
+- File type validation
+- Size limit enforcement
+- Error message safety
+- API rate limiting
+- Input sanitization
+- Authentication (if added later)
+
+## Monitoring and Logging
+- Test log output format
+- Test error reporting
+- Test performance metrics
+- Test health check endpoints

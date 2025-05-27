@@ -1,0 +1,77 @@
+[project]
+name = "voice2mr"
+version = "0.1.0"
+description = "Voice to Medical Record Conversion Service"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "openai>=1.3.0",
+    "python-multipart>=0.0.6",
+    "python-dotenv>=1.0.0",
+    "funasr>=0.8.0",
+    "paddleocr>=2.7.0",
+    "torch>=2.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.7.0",
+    "ruff>=0.1.0"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning"
+]
+asyncio_mode = "auto"
+addopts = "--import-mode=importlib"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+ignore = ["E501"]  # line length is handled by black
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/app"] 

@@ -1,59 +1,80 @@
-# Voice2MR API
+# Voice2MR
 
-A FastAPI application that provides various endpoints for converting voice and image inputs to medical records, as well as providing clinical decision support.
+A modern medical record system with two main components:
+1. MedAI: Progressive Web App (PWA) for the frontend interface
+2. CDSS: Clinical Decision Support System backend
 
-## Features
+## Components
 
-- Voice to Medical Records (v2mr): Convert voice recordings to structured medical records
-- Image to Medical Records (i2mr): Convert images with medical text to structured medical records
-- Text to Medical Records (t2mr): Convert text transcripts to structured medical records
-- Image Question-Answering (iqa): Extract information from medical images and answer questions
-- Clinical Decision Support System (CDSS): Get AI-assisted medical advice based on medical records
+### MedAI (Frontend PWA)
+- Modern, responsive web interface
+- Progressive Web App capabilities
+- Offline support
+- Multi-language interface
+- Located in `medai/` directory
+- Built with TypeScript and Next.js
+
+### CDSS (Backend)
+- Voice to Medical Records (v2mr)
+- Image to Medical Records (i2mr)
+- Text to Medical Records (t2mr)
+- Image Question-Answering (iqa)
+- Clinical Decision Support System
+- Located in `cdss/` directory
+- Built with Python and FastAPI
 
 ## Project Structure
 
 ```
 project_root/
-├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── api/
-│   │   ├── __init__.py
-│   │   ├── routes/
-│   │   │   ├── __init__.py
-│   │   │   ├── cdss.py
-│   │   │   └── medical_records.py
-│   ├── core/
-│   │   ├── __init__.py
-│   │   ├── config.py
-│   │   └── dependencies.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   └── schemas.py
-│   └── services/
-│       ├── __init__.py
-│       ├── asr.py
-│       ├── ocr.py
-│       └── llm.py
-├── tests/
-│   └── __init__.py
-├── .env
-├── requirements.txt
-├── main.py
-└── README.md
+├── cdss/                   # Backend services
+│   ├── src/
+│   │   └── app/
+│   │       ├── __init__.py
+│   │       ├── api/
+│   │       │   ├── routes/
+│   │       │   │   ├── cdss.py
+│   │       │   │   └── medical_records.py
+│   │       │   └── models/
+│   │       ├── core/
+│   │       │   ├── config.py
+│   │       │   └── dependencies.py
+│   │       └── services/
+│   │           ├── asr.py
+│   │           ├── ocr.py
+│   │           └── llm.py
+│   ├── tests/             # Backend tests
+│   │   └── unit/
+│   ├── pyproject.toml     # Python project configuration
+│   ├── requirements.txt   # Python dependencies
+│   ├── pytest.ini        # Python test configuration
+│   └── hotwords.txt      # Domain-specific vocabulary
+├── medai/                 # Frontend PWA
+│   ├── src/
+│   │   └── app/
+│   ├── public/
+│   ├── tests/
+│   ├── package.json      # Node.js dependencies
+│   └── tsconfig.json     # TypeScript configuration
+├── .env                  # Environment variables (shared)
+└── README.md            # Project documentation
 ```
 
-## Installation
+## Installation and Setup
 
-1. Clone the repository
-2. Install the dependencies:
+### Backend (CDSS)
 
+1. Navigate to the CDSS directory:
 ```bash
-pip install -r requirements.txt
+cd cdss
 ```
 
-3. Create a `.env` file in the root directory (optional):
+2. Install the dependencies:
+```bash
+pip install -e ".[dev]"  # Installs both project and test dependencies
+```
 
+3. Create a `.env` file in the root directory:
 ```
 LLM_API_URL=http://localhost:11434/v1
 MODEL_NAME=qwen2.5:latest
@@ -61,19 +82,38 @@ DOMAIN=oncology
 COLLECTION=med_refv3
 ```
 
-## Running the Application
+### Frontend (MedAI)
 
+See `medai/README.md` for frontend setup instructions.
+
+## Running the Applications
+
+### Backend
 ```bash
-python main.py --port 8000 --debug
-```
-
-Or simply:
-
-```bash
-python main.py
+cd cdss
+python -m src.app --port 8000 --debug
 ```
 
 The API will be available at http://localhost:8000/api/docs for Swagger documentation.
+
+### Frontend
+See `medai/README.md` for frontend running instructions.
+
+## Testing
+
+### Backend Tests
+
+From the `cdss` directory:
+```bash
+pytest  # Run all tests
+pytest tests/unit/  # Run unit tests
+pytest tests/integration/  # Run integration tests
+pytest tests/e2e/  # Run end-to-end tests
+pytest --cov=src.app tests/  # Run tests with coverage
+```
+
+### Frontend Tests
+See `medai/README.md` for frontend testing instructions.
 
 ## API Endpoints
 
@@ -91,25 +131,15 @@ The API will be available at http://localhost:8000/api/docs for Swagger document
 
 ## Dependencies
 
+### Backend (Python)
 - FastAPI: Web framework
 - OpenAI API: LLM interface
 - FunASR: Audio speech recognition
 - PaddleOCR: Optical character recognition
 
+### Frontend (TypeScript)
+See `medai/README.md` for frontend dependencies.
+
 ## License
 
-See the LICENSE file for details.
-
-## End-to-End (E2E) PWA Testing
-
-To run the Playwright E2E test for PWA features in a production environment, use the following command:
-
-```sh
-NODE_ENV=production npx playwright test tests/e2e-pwa.spec.ts
-```
-
-**Notes:**
-- This command ensures the tests run with `NODE_ENV=production`, which is required for service worker and PWA features to be active.
-- Make sure your app is built and served in production mode before running the test (e.g., `npm run build && npm start`).
-- The test file `tests/e2e-pwa.spec.ts` should contain your PWA-related E2E tests.
-- For more details, see the test plan in `docs/testplans.md`. 
+See the LICENSE file for details. 

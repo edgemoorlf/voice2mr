@@ -1,4 +1,130 @@
-# Plan to Ditch next-pwa and Restore Manual Service Worker
+# Backend Restructuring and Multi-lingual Support Plan
+
+## 1. Code Structure Reorganization
+1. **Create Modular Package Structure**
+   - Create a new `app` package with the following structure:
+     ```
+     app/
+     ├── __init__.py
+     ├── api/
+     │   ├── __init__.py
+     │   ├── routes/
+     │   │   ├── __init__.py
+     │   │   ├── medical_records.py
+     │   │   ├── voice.py
+     │   │   ├── image.py
+     │   │   └── chat.py
+     │   └── models/
+     │       ├── __init__.py
+     │       ├── request_models.py
+     │       └── response_models.py
+     ├── core/
+     │   ├── __init__.py
+     │   ├── config.py
+     │   ├── i18n.py
+     │   └── exceptions.py
+     ├── services/
+     │   ├── __init__.py
+     │   ├── asr.py
+     │   ├── ocr.py
+     │   ├── llm.py
+     │   └── medical_record.py
+     └── utils/
+         ├── __init__.py
+         ├── file_handlers.py
+         └── validators.py
+     ```
+
+2. **Separate Core Functionality**
+   - Move ASR (Automatic Speech Recognition) logic to `services/asr.py`
+   - Move OCR (Optical Character Recognition) logic to `services/ocr.py`
+   - Move LLM (Language Model) interactions to `services/llm.py`
+   - Move medical record processing to `services/medical_record.py`
+
+3. **API Route Organization**
+   - Split endpoints into logical groups in `routes/` directory
+   - Implement proper request/response models in `models/` directory
+   - Add input validation and error handling middleware
+
+## 2. Multi-lingual Support Implementation
+1. **Language Configuration**
+   - Create language configuration in `core/i18n.py`
+   - Support the same languages as frontend: en, zh, es, fr, th
+   - Implement language detection and fallback mechanisms
+
+2. **Translation System**
+   - Create translation files for each supported language
+   - Implement translation service for:
+     - Error messages
+     - System prompts
+     - Medical record templates
+     - Response formatting
+
+3. **LLM Prompt Engineering**
+   - Update LLM prompts to support multiple languages
+   - Implement language-specific context and instructions
+   - Add language detection and appropriate response formatting
+
+4. **API Response Localization**
+   - Add language parameter to all API endpoints
+   - Implement response localization middleware
+   - Ensure consistent language handling across all endpoints
+
+## 3. Error Handling and Logging
+1. **Structured Error Handling**
+   - Create custom exception classes
+   - Implement consistent error response format
+   - Add proper error logging and monitoring
+
+2. **Request Validation**
+   - Add input validation for all endpoints
+   - Implement proper error messages in multiple languages
+   - Add request logging and monitoring
+
+## 4. Testing and Documentation
+1. **Testing Infrastructure**
+   - Add unit tests for each module
+   - Implement integration tests for API endpoints
+   - Add language-specific test cases
+
+2. **API Documentation**
+   - Update OpenAPI/Swagger documentation
+   - Add language support information
+   - Document new endpoints and models
+
+## 5. Migration Strategy
+1. **Phase 1: Code Restructuring**
+   - Create new package structure
+   - Move existing code to new modules
+   - Update imports and dependencies
+
+2. **Phase 2: Multi-lingual Support**
+   - Implement language configuration
+   - Add translation system
+   - Update LLM prompts
+
+3. **Phase 3: Testing and Deployment**
+   - Add tests for new functionality
+   - Update documentation
+   - Deploy changes incrementally
+
+## 6. Future Considerations
+1. **Performance Optimization**
+   - Implement caching for translations
+   - Optimize LLM prompts for each language
+   - Add performance monitoring
+
+2. **Additional Languages**
+   - Create process for adding new languages
+   - Implement language-specific optimizations
+   - Add language-specific medical terminology
+
+3. **Integration with Frontend**
+   - Ensure consistent language handling
+   - Implement proper error handling
+   - Add proper logging and monitoring
+
+# Plan to Ditch next-pwa and Restore Manual Service Worker (DONE)
 
 **Update (2025-05-26):**
 - Manual service worker is restored and working.
@@ -86,3 +212,4 @@ Per user data storage feature has to be implemented before --
    - Implement `updateContent()` in the service worker to fetch and cache fresh data/content periodically (using the 'periodicsync' event).
    - Request and handle permissions for periodic background sync in the client.
    - Add logic to update cached content and notify the user if new content is available.
+

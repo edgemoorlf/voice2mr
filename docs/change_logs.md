@@ -1,3 +1,37 @@
+## [Date: 2025-05-26] Complete Project Separation
+- Moved all Python-related configuration files to `cdss/` directory:
+  - pyproject.toml
+  - requirements.txt
+  - pytest.ini
+  - hotwords.txt
+- Clear separation between Python (CDSS) and TypeScript (MedAI) projects
+- Updated README.md with clearer project structure and setup instructions
+- Each project now has its own complete configuration
+- Improved project organization and maintainability
+
+## [Date: 2025-05-26] Major Project Reorganization
+- Split project into two main components:
+  1. CDSS (Backend): Moved to `cdss/` directory
+  2. MedAI (Frontend): Located in `medai/` directory
+- Reorganized backend code under `cdss/src/app`
+- Updated pyproject.toml to reflect new directory structure
+- Updated README.md with new project organization and setup instructions
+- Maintained separation of concerns between frontend and backend
+- All tests passing with new structure
+
+## [Date: 2025-05-26] Project Structure Improvement - Src Layout
+- Migrated to modern src layout (`src/app/` instead of `app/`)
+- Removed manual Python path manipulation from root conftest.py
+- Updated pyproject.toml to use src directory
+- Added proper package build configuration with hatch
+- All tests passing with cleaner project structure
+
+## [Date: 2025-05-26] Test Infrastructure Documentation Update
+- Added comprehensive documentation about `conftest.py` and its role in the test infrastructure
+- Documented shared fixtures for test data and environment setup
+- Explained the auto-discovery and test organization benefits of `conftest.py`
+- Updated testplans.md with detailed conftest.py explanation and examples
+
 ## [Date: 2025-05-26] Manual Service Worker Fixes and PWA Test Pass
 - Fixed a critical syntax error in medai/public/service-worker.js fetch event handler (duplicate catch block removed, error handling simplified).
 - Service worker now registers and activates correctly in production.
