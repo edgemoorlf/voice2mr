@@ -12,8 +12,6 @@ FALLBACK_MODEL_NAME = os.environ.get("FALLBACK_MODEL_NAME", "qwen2.5:0.5b")
 
 # Constants
 KV_LIMIT = 256
-DOMAIN = os.environ.get("DOMAIN", "oncology")
-COLLECTION = os.environ.get("COLLECTION", "")
 
 # Supported Media Types
 SUPPORTED_AUDIO_TYPES = [

@@ -78,8 +78,6 @@ pip install -e ".[dev]"  # Installs both project and test dependencies
 ```
 LLM_API_URL=http://localhost:11434/v1
 MODEL_NAME=qwen2.5:latest
-DOMAIN=oncology
-COLLECTION=med_refv3
 ```
 
 ### Frontend (MedAI)
