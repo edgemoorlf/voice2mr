@@ -12,6 +12,134 @@ interface ChatProps {
   dict: Dictionary;
 }
 
+// Component to render message content with special handling for medical records
+const MessageContent = ({ content, role }: { content: string, role: 'user' | 'assistant' }) => {
+  // Check if the content looks like a medical record with improved detection
+  const isMedicalRecord = role === 'assistant' && (
+    content.includes('病历记录') || 
+    content.includes('Medical Record') ||
+    content.includes('患者信息') || 
+    content.includes('主诉') ||
+    content.includes('Chief Complaint') ||
+    content.includes('现病史') ||
+    content.includes('Present Illness') ||
+    content.includes('既往史') ||
+    content.includes('Past Medical History') ||
+    content.includes('过敏史') ||
+    content.includes('Allergies') ||
+    content.includes('家族史') ||
+    content.includes('Family History') ||
+    content.includes('体格检查') ||
+    content.includes('Physical Examination') ||
+    content.includes('辅助检查') ||
+    content.includes('Auxiliary Examination') ||
+    content.includes('诊断') ||
+    content.includes('Diagnosis') ||
+    content.includes('处置意见') ||
+    content.includes('Treatment Plan') ||
+    content.includes('中医辩证') ||
+    content.includes('TCM Diagnosis') ||
+    content.includes('中药处方') ||
+    content.includes('TCM Prescription') ||
+    // Look for the new markdown format pattern
+    /\*\*[^*]+\*\*\s*：?\s*/.test(content) ||
+    // Check for multiple sections with asterisks (fallback for old format)
+    (content.match(/\*\s*\*/g) || []).length >= 3
+  );
+
+  // Medical record display with support for both old and new formats
+  if (isMedicalRecord) {
+    return (
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-full" data-testid="medical-record-container">
+        <div className="flex items-center mb-3">
+          <div className="w-3 h-3 bg-blue-600 rounded-full mr-2"></div>
+          <h3 className="font-bold text-blue-800 text-lg">医疗记录 / Medical Record</h3>
+        </div>
+        <div className="space-y-3 text-gray-700 leading-relaxed" data-testid="medical-record-content">
+          {content.split('\n').map((line, index) => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return null;
+            
+            // Skip the intro line
+            if (trimmedLine.includes('根据您提供的资料') || trimmedLine.includes('我将整理成病历记录')) {
+              return (
+                <div key={index} className="mb-2 text-blue-700 italic">
+                  {trimmedLine}
+                </div>
+              );
+            }
+            
+            // NEW FORMAT: Check for markdown-style headers: **Section:** or **Section**
+            const newFormatMatch = trimmedLine.match(/^\*\*([^*]+)\*\*\s*：?\s*(.*)$/);
+            if (newFormatMatch) {
+              const sectionName = newFormatMatch[1].trim();
+              const sectionContent = newFormatMatch[2].trim();
+              
+              return (
+                <div key={index} className="mb-4">
+                  <h4 className="font-semibold text-blue-800 mb-2 border-b border-blue-200 pb-1 text-base">
+                    {sectionName}
+                  </h4>
+                  {sectionContent && (
+                    <div className="ml-4 text-gray-700 leading-relaxed">{sectionContent}</div>
+                  )}
+                </div>
+              );
+            }
+            
+            // OLD FORMAT: Check for section headers with pattern: * *section** or * *section：** 
+            const oldFormatMatch = trimmedLine.match(/^\*\s*\*([^*]+)\*\*?\s*：?\s*(.*)$/);
+            if (oldFormatMatch) {
+              const sectionName = oldFormatMatch[1].trim().replace(/：$/, ''); // Remove trailing colon
+              const sectionContent = oldFormatMatch[2].trim();
+              
+              return (
+                <div key={index} className="mb-4">
+                  <h4 className="font-semibold text-blue-800 mb-2 border-b border-blue-200 pb-1">
+                    {sectionName}
+                  </h4>
+                  {sectionContent && (
+                    <div className="ml-4 text-gray-700">{sectionContent}</div>
+                  )}
+                </div>
+              );
+            }
+            
+            // Check if it's a numbered list or bullet point (starts with number or dash)
+            if (trimmedLine.match(/^\d+\.\s/) || trimmedLine.startsWith('- ')) {
+              return (
+                <div key={index} className="ml-8 mb-1 flex">
+                  <span className="text-blue-600 mr-2">•</span>
+                  <span>{trimmedLine.replace(/^(\d+\.\s*|\-\s*)/, '')}</span>
+                </div>
+              );
+            }
+            
+            // Check if it's a sub-item (starts with dash but inside a section)
+            if (trimmedLine.startsWith('-')) {
+              return (
+                <div key={index} className="ml-8 mb-1 flex">
+                  <span className="text-blue-600 mr-2">•</span>
+                  <span>{trimmedLine.substring(1).trim()}</span>
+                </div>
+              );
+            }
+            
+            // Regular content - check if it's continuation of previous section
+            return (
+              <div key={index} className="ml-4 mb-1 text-gray-700">
+                {trimmedLine}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return <ReactMarkdown>{content}</ReactMarkdown>;
+};
+
 export default function Chat({ medicalRecord, dict }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -166,7 +294,7 @@ export default function Chat({ medicalRecord, dict }: ChatProps) {
   };
 
   return (
-    <div className="flex flex-col bg-white rounded-lg shadow min-h-[500px] max-h-[70vh]">
+    <div className="flex flex-col bg-white rounded-lg shadow min-h-[500px] max-h-[70vh]" data-testid="chat-container">
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
@@ -177,14 +305,14 @@ export default function Chat({ medicalRecord, dict }: ChatProps) {
             }`}
           >
             <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 break-words ${
+              className={`max-w-[85%] rounded-lg px-4 py-3 break-words ${
                 message.role === 'user'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  : 'bg-gray-50 text-gray-900'
               }`}
             >
               <div className="text-sm whitespace-pre-wrap">
-                <ReactMarkdown>{message.content}</ReactMarkdown>
+                <MessageContent content={message.content} role={message.role} />
               </div>
             </div>
           </div>
@@ -228,11 +356,13 @@ export default function Chat({ medicalRecord, dict }: ChatProps) {
             placeholder={dict.chat.inputPlaceholder}
             className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading || isRecording}
+            data-testid="chat-input"
           />
           <button
             type="submit"
             disabled={isLoading || isRecording || !input.trim()}
             className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            data-testid="chat-submit"
           >
             <PaperAirplaneIcon className="h-5 w-5" />
           </button>
