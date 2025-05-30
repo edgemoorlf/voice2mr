@@ -189,3 +189,5 @@ medai/public/workbox-*.js
 .DS_Store
 medai/package-lock.json
 medai/next-env.d.ts
+test-results/*
+test-results/.last_run.json

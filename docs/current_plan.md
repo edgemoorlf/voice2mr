@@ -213,3 +213,189 @@ Per user data storage feature has to be implemented before --
    - Request and handle permissions for periodic background sync in the client.
    - Add logic to update cached content and notify the user if new content is available.
 
+# Development and Production Setup Guide
+
+## Backend Service Setup
+
+### Development Environment
+1. **Local Development**
+   - Run the backend service locally using:
+     ```bash
+     python -m uvicorn app.main:app --reload --port 8000
+     ```
+   - The service will be available at `http://localhost:8000`
+   - API documentation available at `http://localhost:8000/docs`
+
+2. **Environment Configuration**
+   - Create `.env` file with necessary configurations:
+     ```
+     OPENAI_API_KEY=your_api_key
+     AZURE_SPEECH_KEY=your_azure_key
+     AZURE_SPEECH_REGION=your_azure_region
+     ```
+
+### Production Environment
+1. **Server Setup**
+   - Deploy on a server with sufficient resources (recommended: 2GB RAM minimum)
+   - Install required dependencies:
+     ```bash
+     pip install -r requirements.txt
+     ```
+
+2. **Service Management**
+   - Use systemd service for process management:
+     ```ini
+     [Unit]
+     Description=CDSS Backend Service
+     After=network.target
+
+     [Service]
+     User=your_user
+     WorkingDirectory=/path/to/backend
+     Environment="PATH=/path/to/venv/bin"
+     ExecStart=/path/to/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+     Restart=always
+
+     [Install]
+     WantedBy=multi-user.target
+     ```
+
+3. **Security Considerations**
+   - Set up SSL/TLS using Nginx or similar
+   - Configure firewall rules
+   - Implement rate limiting
+   - Set up proper CORS policies
+
+## Frontend Setup
+
+### Development Environment
+1. **Local Development**
+   - Run the Next.js development server:
+     ```bash
+     npm run dev
+     ```
+   - The application will be available at `http://localhost:3000`
+
+2. **Environment Configuration**
+   - Create `.env.local` file:
+     ```
+     NEXT_PUBLIC_API_URL=http://localhost:8000
+     ```
+
+### Production Environment
+1. **Build Process**
+   - Build the application:
+     ```bash
+     npm run build
+     ```
+   - Start the production server:
+     ```bash
+     npm start
+     ```
+
+2. **Deployment Options**
+   - **Static Hosting** (Recommended for frontend)
+     - Deploy to Vercel, Netlify, or similar platforms
+     - Configure environment variables in the hosting platform
+     - Set up custom domain and SSL
+
+   - **Self-Hosting**
+     - Use Nginx to serve the static files
+     - Configure reverse proxy for API requests
+     - Set up SSL certificates
+
+## Communication Between Frontend and Backend
+
+### Development Setup
+1. **Local Development**
+   - Frontend runs on port 3000
+   - Backend runs on port 8000
+   - Configure CORS in backend to allow local development
+
+2. **SSH Tunnel Setup** (For remote development)
+   ```bash
+   ssh -L 8000:localhost:8000 your_server
+   ```
+
+### Production Setup
+1. **API Communication**
+   - Configure frontend to use production API URL
+   - Set up proper CORS policies
+   - Implement API request caching where appropriate
+
+2. **Security Measures**
+   - Use HTTPS for all communications
+   - Implement proper authentication
+   - Set up rate limiting
+   - Configure proper headers
+
+## Resource Requirements
+
+### Backend Server
+- **Minimum Requirements**
+  - 2GB RAM
+  - 1 CPU core
+  - 20GB storage
+  - Stable internet connection
+
+- **Recommended Requirements**
+  - 4GB RAM
+  - 2 CPU cores
+  - 50GB storage
+  - High-speed internet connection
+
+### Frontend Hosting
+- **Static Hosting** (Recommended)
+  - Minimal server requirements
+  - CDN for global distribution
+  - Automatic SSL/TLS
+
+- **Self-Hosting**
+  - 1GB RAM minimum
+  - 1 CPU core
+  - 10GB storage
+  - SSL certificate
+
+## Monitoring and Maintenance
+
+1. **Backend Monitoring**
+   - Set up logging (e.g., using ELK stack)
+   - Monitor server resources
+   - Set up alerts for critical issues
+   - Regular backup of data
+
+2. **Frontend Monitoring**
+   - Error tracking (e.g., Sentry)
+   - Performance monitoring
+   - User analytics
+   - Regular security updates
+
+3. **Regular Maintenance**
+   - Update dependencies
+   - Security patches
+   - Performance optimization
+   - Regular backups
+
+## Chat Interface Improvements
+
+### Medical Record Display Enhancement
+- **Custom Medical Record Component**: Implemented `MedicalRecordDisplay` component that properly formats medical records with:
+  - Structured sections with headers and content
+  - Visual hierarchy using colors and spacing
+  - Bullet points for list items
+  - Professional medical record styling
+
+- **Smart Content Detection**: Added `MessageContent` component that automatically detects medical record content and applies appropriate formatting
+
+- **Improved Visual Design**:
+  - Blue color scheme for medical records
+  - Proper spacing and typography
+  - Section headers with underlines
+  - Organized content structure
+
+### Technical Implementation
+- Medical records are detected by keywords like '病历记录', '患者信息', '主诉', '现病史'
+- Automatic parsing of asterisk-delimited sections
+- Responsive design that works on all screen sizes
+- Maintains all existing chat functionality while enhancing medical record display
+

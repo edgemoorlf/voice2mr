@@ -86,58 +86,94 @@ See `medai/README.md` for frontend setup instructions.
 
 ## Running the Applications
 
-### Backend
+### Backend (CDSS)
+
+You can run the backend in several ways:
+
+#### 1. Development Mode
+
+- Using the main entry point script (recommended):
+
 ```bash
 cd cdss
-python -m src.app --port 8000 --debug
+python main.py --port 8000 --reload
+```
+
+- Using the installed CLI (after `pip install -e .`):
+
+```bash
+cd cdss
+voice2mr --port 8000 --reload
+```
+
+- Using Uvicorn directly:
+
+```bash
+cd cdss
+uvicorn src.app:app --reload --port 8000
 ```
 
 The API will be available at http://localhost:8000/api/docs for Swagger documentation.
 
-### Frontend
-See `medai/README.md` for frontend running instructions.
+#### 2. Production Mode
 
-## Testing
+- Using Gunicorn (recommended for production):
 
-### Backend Tests
-
-From the `cdss` directory:
 ```bash
-pytest  # Run all tests
-pytest tests/unit/  # Run unit tests
-pytest tests/integration/  # Run integration tests
-pytest tests/e2e/  # Run end-to-end tests
-pytest --cov=src.app tests/  # Run tests with coverage
+cd cdss
+pip install gunicorn
+
+gunicorn src.app:app \
+    --workers 4 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 0.0.0.0:8000 \
+    --timeout 120 \
+    --access-logfile - \
+    --error-logfile - \
+    --log-level info
 ```
 
-### Frontend Tests
-See `medai/README.md` for frontend testing instructions.
+- Using Docker (optional):
 
-## API Endpoints
+Create a `Dockerfile` in the `cdss` directory:
 
-### Medical Records
+```dockerfile
+FROM python:3.11-slim
 
-- `POST /api/t2mr`: Convert text transcript to medical record
-- `POST /api/v2mr`: Convert voice recording to medical record
-- `POST /api/i2mr`: Convert image to medical record
-- `POST /api/iqa`: Extract information from medical images and answer questions
+WORKDIR /app
 
-### CDSS
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-- `POST /api/query`: Get AI-assisted medical advice
-- `POST /api/mr2nl`: Convert structured medical records to natural language
+# Copy requirements first for better caching
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-## Dependencies
+# Copy application code
+COPY . .
 
-### Backend (Python)
-- FastAPI: Web framework
-- OpenAI API: LLM interface
-- FunASR: Audio speech recognition
-- PaddleOCR: Optical character recognition
+# Set environment variables
+ENV PYTHONPATH=/app/src
 
-### Frontend (TypeScript)
-See `medai/README.md` for frontend dependencies.
+# Run with gunicorn
+CMD ["gunicorn", "src.app:app", \
+     "--workers", "4", \
+     "--worker-class", "uvicorn.workers.UvicornWorker", \
+     "--bind", "0.0.0.0:8000", \
+     "--timeout", "120", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-", \
+     "--log-level", "info"]
+```
 
-## License
+Build and run the Docker container:
 
-See the LICENSE file for details. 
+```bash
+docker build -t cdss .
+docker run -p 8000:8000 --env-file .env cdss
+```
+
+### Frontend
+See `medai/README.md`

@@ -33,3 +33,53 @@ ASR_CONFIG = {
         "speech_2_noise_ratio": 1.2,
     }
 }
+
+# Multi-language ASR/OCR Configuration
+LANGUAGE_MODEL_CONFIG = {
+    "asr": {
+        "zh": {
+            "type": "funasr",
+            "model": "paraformer-zh",
+            "enabled": True
+        },
+        "en": {
+            "type": "whisper",
+            "model": "base",
+            "enabled": False
+        },
+        "es": {
+            "type": "whisper", 
+            "model": "base",
+            "enabled": False
+        },
+        "fr": {
+            "type": "whisper",
+            "model": "base", 
+            "enabled": False
+        },
+        "th": {
+            "type": "external",  # Route to external API
+            "provider": "openai",
+            "enabled": False
+        }
+    },
+    "ocr": {
+        "zh": {"type": "paddleocr", "lang": "ch", "enabled": True},
+        "en": {"type": "paddleocr", "lang": "en", "enabled": False},
+        "es": {"type": "paddleocr", "lang": "es", "enabled": False},
+        "fr": {"type": "paddleocr", "lang": "french", "enabled": False},
+        "th": {"type": "paddleocr", "lang": "th", "enabled": False}
+    }
+}
+
+# External service configuration
+EXTERNAL_SERVICES = {
+    "openai": {
+        "api_key": os.environ.get("OPENAI_API_KEY"),
+        "base_url": "https://api.openai.com/v1"
+    },
+    "azure": {
+        "api_key": os.environ.get("AZURE_VISION_KEY"),
+        "endpoint": os.environ.get("AZURE_VISION_ENDPOINT")
+    }
+}

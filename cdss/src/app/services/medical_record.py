@@ -8,27 +8,29 @@ from app.core.exceptions import UnsupportedMediaType, TranscriptionError
 from app.core.i18n import get_language_prompt
 
 class MedicalRecordService:
-    async def process_voice_files(self, files: List[bytes], content_types: List[str], language: str) -> str:
-        """Process voice files and return combined transcript"""
+    async def process_voice_files(self, files: List[bytes], content_types: List[str], language: str = "zh") -> str:
+        """Process voice files with language awareness"""
         transcripts = []
         
         for file_content, content_type in zip(files, content_types):
             if content_type not in SUPPORTED_AUDIO_TYPES:
                 raise UnsupportedMediaType(content_type)
                 
-            transcript = await asr_service.transcribe_voice(file_content)
+            # Pass language to ASR service
+            transcript = await asr_service.transcribe_voice(file_content, language)
             if not transcript:
                 raise TranscriptionError("ASR", "Empty transcript")
             transcripts.append(transcript)
         
         return "\n".join(transcripts)
 
-    async def process_image_files(self, files: List[bytes]) -> str:
-        """Process image files and return combined transcript"""
+    async def process_image_files(self, files: List[bytes], language: str = "zh") -> str:
+        """Process image files with language awareness"""
         transcripts = []
         
         for file_content in files:
-            transcript = await ocr_service.transcribe_image(file_content)
+            # Pass language to OCR service
+            transcript = await ocr_service.transcribe_image(file_content, language)
             if not transcript:
                 raise TranscriptionError("OCR", "Empty transcript")
             transcripts.append(transcript)

@@ -60,11 +60,40 @@ LLM_PROMPTS = {
         'doctor_context': "您是一位中国医院的智能医疗助手。您使用中文交流，是肿瘤学专家。",
         'patient_context': "您是一位中国医院的智能医疗助手。您使用通俗易懂的中文与患者交流。",
         'mr_format': "请将以下内容转换为正式的病历记录：",
-        'mr_format_detail': """请包含以下项目：
-主诉,现病史,既往史,过敏史,家族史,体格检查,辅助检查,诊断,处置意见,注意事项,中医辩证,中药处方。
-如果某项无信息，请填写"无"。
-请不要遗漏任何检查数据。
-请不要提及任何个人身份信息。""",
+        'mr_format_detail': """请严格按照以下格式输出医疗记录，每个部分占一行，使用明确的标识符：
+
+**病历记录**
+
+**主诉：** [患者主诉内容]
+
+**现病史：** [现病史详细信息]
+
+**既往史：** [既往病史信息]
+
+**过敏史：** [过敏史信息，如无请写"无"]
+
+**家族史：** [家族史信息，如无请写"无"]
+
+**体格检查：** [体格检查结果]
+
+**辅助检查：** [各项检查结果，如CT、血液检查等]
+
+**诊断：** [临床诊断]
+
+**处置意见：** [治疗建议和处理方案]
+
+**注意事项：** [注意事项和随访建议]
+
+**中医辩证：** [中医诊断，如无请写"无"]
+
+**中药处方：** [中药处方，如无请写"无"]
+
+要求：
+- 严格按照上述格式输出，每个部分必须单独成行
+- 如果某项无信息，请填写"无"
+- 请不要遗漏任何检查数据
+- 请不要提及任何个人身份信息
+- 保持专业的医疗术语和格式""",
         'doctor_query_context': """这个问题是针对具有以下病历的患者：{medical_records}
 这里是一些可能与问题相关的检索文档：{retrieved_info}。
 请尝试参考具体文档名称并突出显示来回答问题。
@@ -84,11 +113,40 @@ LLM_PROMPTS = {
         'doctor_context': "You are an intelligent medical assistant in a hospital. You communicate in English and are an expert in oncology.",
         'patient_context': "You are an intelligent medical assistant in a hospital. Please communicate in simple English that patients can understand.",
         'mr_format': "Please convert the following content into a formal medical record:",
-        'mr_format_detail': """Please include the following items:
-Chief Complaint, Present Illness History, Past Medical History, Allergies, Family History, Physical Examination, Auxiliary Examination, Diagnosis, Treatment Plan, Precautions, TCM Diagnosis, TCM Prescription.
-If there is no information for an item, please write "None".
-Please do not miss any examination data.
-Please do not mention any personal identity information.""",
+        'mr_format_detail': """Please strictly follow this format to output the medical record, with each section on a separate line using clear identifiers:
+
+**Medical Record**
+
+**Chief Complaint:** [Patient's chief complaint]
+
+**Present Illness History:** [Detailed present illness information]
+
+**Past Medical History:** [Past medical history information]
+
+**Allergies:** [Allergy information, write "None" if none]
+
+**Family History:** [Family history information, write "None" if none]
+
+**Physical Examination:** [Physical examination results]
+
+**Auxiliary Examination:** [Examination results such as CT, blood tests, etc.]
+
+**Diagnosis:** [Clinical diagnosis]
+
+**Treatment Plan:** [Treatment recommendations and management plan]
+
+**Precautions:** [Precautions and follow-up recommendations]
+
+**TCM Diagnosis:** [Traditional Chinese Medicine diagnosis, write "None" if none]
+
+**TCM Prescription:** [TCM prescription, write "None" if none]
+
+Requirements:
+- Strictly follow the above format, each section must be on a separate line
+- If there is no information for an item, please write "None"
+- Please do not miss any examination data
+- Please do not mention any personal identity information
+- Maintain professional medical terminology and format""",
         'doctor_query_context': """This question is for a patient with the following medical records: {medical_records}
 Here are some retrieved documents that may be relevant to the question: {retrieved_info}.
 Please try to answer the question with reference to specific document names and highlight them.

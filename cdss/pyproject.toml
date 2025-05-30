@@ -17,6 +17,9 @@ dependencies = [
     "torch>=2.1.0",
 ]
 
+[project.scripts]
+voice2mr = "main:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
