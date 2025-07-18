@@ -1,5 +1,9 @@
 {
   "appTitle": "Your AI Medical Assistant",
   "appSubtitle": "Speak or type your medical questions, and upload relevant records for more personalized assistance",
-  "uploadMedicalRecords": "Upload Medical Records"
-} 
+  "uploadMedicalRecords": "Upload Medical Records",
+  "uploadDescription": "Upload audio, video or image files to generate medical records",
+  "uploadDragDropText": "Drag & drop files here, or click to select",
+  "uploadSupportedFormats": "Supported formats: audio/mp3, audio/wav, video/mp4, image/png, image/jpeg",
+  "uploadLightModeWarning": "Upload features are disabled - server is running in lightweight mode"
+}

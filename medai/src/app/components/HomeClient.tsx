@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useDropzone } from "react-dropzone"
-import { ArrowUpTrayIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline"
+import { ArrowUpTrayIcon, ChatBubbleLeftIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline"
 import toast from "react-hot-toast"
 import Chat from "./Chat"
 import type { Dictionary } from "@/types/dictionary"
@@ -185,6 +185,35 @@ export default function HomeClient({ dict, lang }: HomeClientProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [medicalRecordHtml, setMedicalRecordHtml] = useState("")
   const [rawMedicalRecord, setRawMedicalRecord] = useState("")
+  const [isLightMode, setIsLightMode] = useState(false)
+  const hasFetchedServerInfo = useRef(false)
+  
+  // Scroll to top on initial load
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+  
+  // Check server mode on component mount
+  useEffect(() => {
+    if (hasFetchedServerInfo.current) return
+    hasFetchedServerInfo.current = true
+    
+    const fetchServerInfo = async () => {
+      try {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+        const response = await fetch(`${backendUrl}/server-info`)
+        if (!response.ok) throw new Error('Failed to fetch server info')
+        const data = await response.json()
+        setIsLightMode(data.light_mode)
+      } catch (error) {
+        console.error('Error fetching server info:', error)
+        // Default to full mode on error
+        setIsLightMode(false)
+      }
+    }
+    
+    fetchServerInfo()
+  }, [])
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "audio/*": [".mp3", ".wav", ".m4a"],
@@ -317,21 +346,42 @@ export default function HomeClient({ dict, lang }: HomeClientProps) {
             {/* Medical Records Section - Secondary Feature */}
             <div className="bg-white shadow rounded-lg p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">{dict.uploadMedicalRecords}</h3>
+              
+              {/* Light mode warning */}
+              {isLightMode && (
+                <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-yellow-700">
+                        {dict.uploadLightModeWarning || "Upload features are disabled - server is running in lightweight mode"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <p className="text-sm text-gray-600 mb-4">
-                {dict.upload.description}
+                {dict.uploadDescription}
               </p>
               
               <div 
                 {...getRootProps()} 
-                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer"
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  isLightMode 
+                    ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed" 
+                    : "border-gray-300 hover:border-blue-500 cursor-pointer"
+                }`}
               >
-                <input {...getInputProps()} />
+                <input {...getInputProps()} disabled={isLightMode} />
                 <ArrowUpTrayIcon className="mx-auto h-12 w-12 text-gray-400" />
                 <p className="mt-2 text-sm text-gray-600">
-                  {dict.upload.dragDropText}
+                  {dict.uploadDragDropText}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  {dict.upload.supportedFormats}
+                  {dict.uploadSupportedFormats}
                 </p>
               </div>
 
@@ -355,10 +405,14 @@ export default function HomeClient({ dict, lang }: HomeClientProps) {
 
                   {/* Process Button */}
                   <div className="mt-4">
-                    <button
-                      onClick={handleSubmit}
-                      disabled={isProcessing || files.length === 0}
-                      className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isLightMode || isProcessing || files.length === 0}
+                    className={`w-full flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                      isLightMode 
+                        ? "bg-gray-400 cursor-not-allowed" 
+                        : "bg-blue-600 hover:bg-blue-700"
+                    }`}
                     >
                       {isProcessing ? (
                         <span>Processing...</span>
@@ -390,4 +444,4 @@ export default function HomeClient({ dict, lang }: HomeClientProps) {
       </div>
     </div>
   )
-} 
+}

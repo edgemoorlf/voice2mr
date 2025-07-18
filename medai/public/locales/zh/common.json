@@ -1,5 +1,9 @@
 {
   "appTitle": "您的AI医疗助手",
-  "appSubtitle": "通过语音或文字输入您的医疗问题，并上传相关记录以获得更个性化的帮助",
-  "uploadMedicalRecords": "上传病历"
-} 
+  "appSubtitle": "说出或输入您的医疗问题，上传相关记录以获得更个性化的帮助",
+  "uploadMedicalRecords": "上传医疗记录",
+  "uploadDescription": "上传音频、视频或图像文件以生成医疗记录",
+  "uploadDragDropText": "拖放文件到这里，或点击选择",
+  "uploadSupportedFormats": "支持格式：audio/mp3, audio/wav, video/mp4, image/png, image/jpeg",
+  "uploadLightModeWarning": "上传功能已禁用 - 服务器运行在轻量级模式"
+}

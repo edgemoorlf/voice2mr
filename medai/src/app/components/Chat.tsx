@@ -150,14 +150,6 @@ export default function Chat({ medicalRecord, dict }: ChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioChunks = useRef<Blob[]>([]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   // Add welcome message when component mounts
   useEffect(() => {
     if (messages.length === 0) {
@@ -376,6 +368,7 @@ export default function Chat({ medicalRecord, dict }: ChatProps) {
             placeholder={dict.chat.inputPlaceholder}
             className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading || isRecording}
+            autoFocus
           />
           <button
             type="submit"
@@ -388,4 +381,4 @@ export default function Chat({ medicalRecord, dict }: ChatProps) {
       </form>
     </div>
   );
-} 
+}
