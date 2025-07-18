@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional, Dict
 
 class CDSSResponseModel(BaseModel):
-    session_id: str
+    session_id: Optional[str] = None
     content: str
     timestamp: int
     prompt_tokens: int
@@ -22,3 +22,8 @@ class ScaleResponseModel(BaseModel):
     prompt_tokens: int
     completion_tokens: int
     total_tokens: int
+
+class ServerInfoModel(BaseModel):
+    light_mode: bool
+    features: Dict[str, bool]
+    version: str

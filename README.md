@@ -177,3 +177,19 @@ docker run -p 8000:8000 --env-file .env cdss
 
 ### Frontend
 See `medai/README.md`
+
+
+### vLLM Setup
+
+
+```bash
+vllm serve modelscope/models/LLM-Research/gemma-3-27b-it --enable-lora --lora-modules adapter1=tr/saves/Gemma-3-27B-Instruct/lora/train_2025-06-16-14-18-24/ --max-loras 4 --max-lora-rank 16
+
+```
+
+Alternatively, to load lora at runtime
+
+```bash
+export VLLM_ALLOW_RUNTIME_LORA_UPDATING=True
+vllm serve modelscope/models/LLM-Research/gemma-3-27b-it --enable-lora
+```

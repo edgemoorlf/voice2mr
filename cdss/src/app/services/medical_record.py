@@ -1,8 +1,6 @@
 import time
 from typing import Dict, List, Optional
 from app.services.llm import llm_service
-from app.services.asr import asr_service
-from app.services.ocr import ocr_service
 from app.core.config import SUPPORTED_AUDIO_TYPES
 from app.core.exceptions import UnsupportedMediaType, TranscriptionError
 from app.core.i18n import get_language_prompt
@@ -10,6 +8,11 @@ from app.core.i18n import get_language_prompt
 class MedicalRecordService:
     async def process_voice_files(self, files: List[bytes], content_types: List[str], language: str = "zh") -> str:
         """Process voice files with language awareness"""
+        try:
+            from app.services.asr import asr_service
+        except ImportError:
+            raise RuntimeError("ASR service not available in lightweight mode")
+            
         transcripts = []
         
         for file_content, content_type in zip(files, content_types):
@@ -26,6 +29,11 @@ class MedicalRecordService:
 
     async def process_image_files(self, files: List[bytes], language: str = "zh") -> str:
         """Process image files with language awareness"""
+        try:
+            from app.services.ocr import ocr_service
+        except ImportError:
+            raise RuntimeError("OCR service not available in lightweight mode")
+            
         transcripts = []
         
         for file_content in files:

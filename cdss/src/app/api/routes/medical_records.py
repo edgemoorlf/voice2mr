@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, File, Form, UploadFile, HTTPException
 from typing import List
 from app.api.models.request_models import MRRequestModel
 from app.api.models.response_models import MRResponseModel
@@ -62,14 +62,26 @@ async def a2mr_endpoint(
 
     transcripts = []
     if voice_files:
-        voice_transcript = await medical_record_service.process_voice_files(voice_files, voice_content_types, language)
-        transcripts.append(voice_transcript)
+        try:
+            voice_transcript = await medical_record_service.process_voice_files(voice_files, voice_content_types, language)
+            transcripts.append(voice_transcript)
+        except RuntimeError as e:
+            raise HTTPException(
+                status_code=501,
+                detail=str(e)
+            )
     
     if image_files:
-        image_transcript = await medical_record_service.process_image_files(image_files)
-        if medical_records:
-            transcripts.append(medical_records)
-        transcripts.append(image_transcript)
+        try:
+            image_transcript = await medical_record_service.process_image_files(image_files)
+            if medical_records:
+                transcripts.append(medical_records)
+            transcripts.append(image_transcript)
+        except RuntimeError as e:
+            raise HTTPException(
+                status_code=501,
+                detail=str(e)
+            )
     elif medical_records:
         transcripts.append(medical_records)
 

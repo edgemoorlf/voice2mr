@@ -5,7 +5,7 @@ Voice2MR API application package
 import argparse
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import medical_records, chat
+from app.api.routes import medical_records, chat, server_info
 
 app = FastAPI()
 
@@ -22,15 +22,7 @@ app.add_middleware(
 # Include routers
 app.include_router(medical_records.router, tags=["Medical Records"])
 app.include_router(chat.router, tags=["Chat"])
-
-# Only initialize heavy services in the actual server process
-@app.on_event("startup")
-def initialize_services():
-    from app.services.asr import asr_service
-    from app.services.ocr import ocr_service
-    # This will trigger their __init__ only once in the child process
-    _ = asr_service
-    _ = ocr_service
+app.include_router(server_info.router, tags=["Server Info"])
 
 if __name__ == "__main__":
     import uvicorn
