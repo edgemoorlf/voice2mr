@@ -356,7 +356,7 @@ export default function HomeClient({ dict, lang }: HomeClientProps) {
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-yellow-700">
-                        {dict.uploadLightModeWarning || "Upload features are disabled - server is running in lightweight mode"}
+                        {"Upload features are disabled - server is running in lightweight mode"}
                       </p>
                     </div>
                   </div>
@@ -364,7 +364,7 @@ export default function HomeClient({ dict, lang }: HomeClientProps) {
               )}
               
               <p className="text-sm text-gray-600 mb-4">
-                {dict.uploadDescription}
+                {dict.upload.description}
               </p>
               
               <div 
@@ -378,10 +378,10 @@ export default function HomeClient({ dict, lang }: HomeClientProps) {
                 <input {...getInputProps()} disabled={isLightMode} />
                 <ArrowUpTrayIcon className="mx-auto h-12 w-12 text-gray-400" />
                 <p className="mt-2 text-sm text-gray-600">
-                  {dict.uploadDragDropText}
+                  {dict.upload.dragDropText}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  {dict.uploadSupportedFormats}
+                  {dict.upload.supportedFormats}
                 </p>
               </div>
 

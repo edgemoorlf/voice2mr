@@ -1,6 +1,10 @@
 import type { Dictionary } from '@/types/dictionary';
 import { getDictionary } from '../dictionaries/get-dictionary';
 import type { Locale } from '../../i18n-config';
+import { logPageAccess } from '@/utils/pageLogger';
+
+// Force dynamic rendering for logging
+export const dynamic = 'force-dynamic';
 
 // EXTREME DIAGNOSTIC ATTEMPT: Typing params AND searchParams as Promises.
 // This is NOT standard for App Router and is for diagnosis only.
@@ -9,6 +13,13 @@ export default async function About(props: {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>; // Treating searchParams as a Promise
 }) {
   const { lang } = await props.params;
+  
+  // Log page access
+  await logPageAccess(`/${lang}/about`, {
+    language: lang,
+    page: 'about'
+  });
+  
   // const actualSearchParams = props.searchParams ? await props.searchParams : undefined; // How you might access it
   const dict = await getDictionary(lang) as Dictionary;
 

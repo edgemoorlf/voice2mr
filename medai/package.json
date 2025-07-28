@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "logs": "npx ts-node src/utils/logManager.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.2",
@@ -36,6 +37,7 @@
     "eslint-config-next": "14.2.5",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.0",
     "typescript": "^5"
   }
 }

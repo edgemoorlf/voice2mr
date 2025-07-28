@@ -2,10 +2,11 @@ export type Dictionary = {
   appTitle: string
   appSubtitle: string
   uploadMedicalRecords: string
-  uploadDescription: string
-  uploadDragDropText: string
-  uploadSupportedFormats: string
-  uploadLightModeWarning: string
+  upload: {
+    description: string
+    dragDropText: string
+    supportedFormats: string
+  }
   chat: {
     welcomeMessage: string
     inputPlaceholder: string

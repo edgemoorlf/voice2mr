@@ -34,6 +34,15 @@ export function middleware(request: NextRequest) {
   if (pathnameIsMissingLocale) {
     // Get the preferred locale from the request header
     const locale = request.headers.get('accept-language')?.split(',')[0].split('-')[0] || i18n.defaultLocale
+    
+    // Log the redirect for tracking
+    console.log('🔄 [REDIRECT]', {
+      from: pathname,
+      to: `/${locale}${pathname === '/' ? '' : pathname}`,
+      userAgent: request.headers.get('user-agent')?.substring(0, 50) + '...',
+      acceptLanguage: request.headers.get('accept-language'),
+      clientIP: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    });
 
     // Redirect to the locale-prefixed path
     let targetPath = `/${locale}`;
